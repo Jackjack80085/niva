@@ -1,0 +1,6 @@
+{
+  "name": "Dr. Siddharth Sen — Healthcare & Clinical Workspace",
+  "description": "Thoughtful personal healthcare service and modern clinical scheduling workspace designed for human-centered care.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
