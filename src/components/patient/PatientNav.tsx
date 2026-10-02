@@ -17,6 +17,15 @@ export const PatientNav: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [mobileMenuOpen]);
+
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
     setActiveView('patient-home');
@@ -31,11 +40,11 @@ export const PatientNav: React.FC = () => {
       <div
         className={`w-full transition-all duration-400 ease-out pointer-events-auto ${
           scrolled
-            ? 'max-w-5xl mt-3 mx-4 sm:mx-6 px-6 py-3 rounded-full bg-[#FAF7F0]/92 backdrop-blur-md border border-[#332B27]/12 shadow-sm'
-            : 'max-w-6xl mx-auto px-6 py-6 bg-transparent'
+            ? 'max-w-6xl mt-3 mx-3 sm:mx-6 px-4 sm:px-6 py-3 rounded-full bg-[#FAF7F0]/92 backdrop-blur-md border border-[#332B27]/12 shadow-sm'
+            : 'max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 bg-transparent'
         }`}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           
           {/* Brand: Dr. NIVA JACOB / Psychiatrist • Sexologist • Therapist */}
           <button
@@ -43,22 +52,22 @@ export const PatientNav: React.FC = () => {
               setActiveView('patient-home');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="text-left group cursor-pointer"
+            className="min-w-0 text-left group cursor-pointer"
           >
             <span className={`font-editorial font-medium tracking-tight text-[#332B27] group-hover:text-[#B89552] transition-all duration-300 block ${
-              scrolled ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl'
+              scrolled ? 'text-xl sm:text-2xl' : 'text-xl sm:text-3xl'
             }`}>
               Dr. NIVA JACOB
             </span>
             {!scrolled && (
-              <span className="block text-[11px] sm:text-xs font-sans-clean font-medium text-[#332B27]/60 tracking-wide mt-0.5">
+              <span className="block text-[9px] min-[375px]:text-[10px] sm:text-xs font-sans-clean font-medium text-[#332B27]/60 tracking-wide mt-0.5">
                 Psychiatrist • Sexologist • Therapist
               </span>
             )}
           </button>
 
           {/* Desktop Navigation Links - Extremely Minimal */}
-          <nav className="hidden md:flex items-center gap-7 text-[13px] font-sans-clean font-medium text-[#332B27]/80">
+          <nav className="hidden xl:flex items-center gap-7 text-[13px] font-sans-clean font-medium text-[#332B27]/80">
             <button
               onClick={() => scrollToSection('about')}
               className="hover:text-[#332B27] transition-colors cursor-pointer py-1"
@@ -113,7 +122,7 @@ export const PatientNav: React.FC = () => {
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="flex md:hidden items-center gap-2.5">
+          <div className="flex xl:hidden items-center gap-1 shrink-0">
             <button
               onClick={() => openBooking()}
               className="px-3.5 py-1.5 rounded-full bg-[#332B27] text-white text-[11px] font-semibold uppercase tracking-wider"
@@ -122,8 +131,10 @@ export const PatientNav: React.FC = () => {
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-1.5 text-[#332B27] rounded-lg hover:bg-neutral-100/60 cursor-pointer"
+              className="p-2.5 text-[#332B27] rounded-lg hover:bg-neutral-100/60 cursor-pointer"
               aria-label="Toggle Navigation Menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="patient-mobile-menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -139,7 +150,8 @@ export const PatientNav: React.FC = () => {
               animate={{ opacity: 1, height: 'auto', y: 0 }}
               exit={{ opacity: 0, height: 0, y: -6 }}
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="md:hidden mt-4 pt-4 border-t border-[#332B27]/10 space-y-3 bg-[#FAF7F0] rounded-2xl p-4 shadow-lg overflow-hidden pointer-events-auto"
+              id="patient-mobile-menu"
+              className="xl:hidden max-h-[calc(100dvh-150px)] overflow-y-auto mt-4 pt-4 border-t border-[#332B27]/10 space-y-3 bg-[#FAF7F0] rounded-2xl p-4 shadow-lg pointer-events-auto"
             >
               <button
                 onClick={() => scrollToSection('about')}

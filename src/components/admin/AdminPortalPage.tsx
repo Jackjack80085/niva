@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { DOCTOR_INFO } from '../../data/initialData';
 import { 
@@ -13,11 +13,17 @@ import { motion } from 'framer-motion';
 import { fadeInUp, fadeInScale } from '../../utils/motionVariants';
 
 export const AdminPortalPage: React.FC = () => {
-  const { setActiveView, addToast, verifyAdminPasscode } = useApp();
+  const { setActiveView, addToast, verifyAdminPasscode, isAdminAuthenticated } = useApp();
   const [pinCode, setPinCode] = useState('');
   const [pinError, setPinError] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!isSuccess || !isAdminAuthenticated) return;
+    const timer = window.setTimeout(() => setActiveView('admin'), 500);
+    return () => window.clearTimeout(timer);
+  }, [isSuccess, isAdminAuthenticated, setActiveView]);
 
   const handleDigitPress = (digit: string) => {
     if (pinCode.length < 4) {
@@ -51,9 +57,6 @@ export const AdminPortalPage: React.FC = () => {
           message: `Identity confirmed. Welcome to Dr. Niva Jacob's clinical dashboard.`,
           type: 'success',
         });
-        setTimeout(() => {
-          setActiveView('admin');
-        }, 500);
       } else {
         setPinError(true);
         setPinCode('');

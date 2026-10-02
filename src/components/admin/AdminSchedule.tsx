@@ -122,8 +122,8 @@ export const AdminSchedule: React.FC = () => {
 
       {/* Week Calendar Grid View */}
       {calendarView === 'week' && (
-        <div className="bg-white rounded-2xl border border-[#332B27]/10 overflow-hidden shadow-xs">
-          
+        <div className="bg-white rounded-2xl border border-[#332B27]/10 overflow-x-auto shadow-xs" role="region" aria-label="Weekly schedule; scroll horizontally to see all days" tabIndex={0}>
+          <div className="min-w-[800px]">
           {/* Days Header */}
           <div className="grid grid-cols-8 border-b border-[#332B27]/10 bg-[#FAF7F0] text-xs font-sans-clean">
             <div className="p-3 border-r border-[#332B27]/10 text-[#332B27]/50 font-mono-tabular text-center">
@@ -212,7 +212,7 @@ export const AdminSchedule: React.FC = () => {
               </div>
             ))}
           </div>
-
+          </div>
         </div>
       )}
 

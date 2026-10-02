@@ -97,6 +97,10 @@ export const BookingWorkspace: React.FC = () => {
   // New Patient Flow Step: 1 (Choose care), 2 (Choose date), 3 (Your details), 4 (Confirmed)
   const [currentStep, setCurrentStep] = useState<number>(1);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentStep, patientMode]);
+
   // Care category for new patient flow
   const [careCategory, setCareCategory] = useState<CareCategory>(() => {
     const pre = bookingInitialPreselection?.serviceId;
@@ -245,8 +249,8 @@ export const BookingWorkspace: React.FC = () => {
       
       {/* Top Header Bar */}
       <header className="border-b border-[#332B27]/10 bg-[#FAF7F0]/90 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 min-h-16 gap-2 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               onClick={() => {
                 if (patientMode === 'returning') {
@@ -265,7 +269,7 @@ export const BookingWorkspace: React.FC = () => {
 
             <span className="text-neutral-300">/</span>
 
-            <span className="font-editorial text-sm font-semibold tracking-wider text-[#332B27] uppercase">
+            <span className="font-editorial text-xs sm:text-sm font-semibold tracking-wider text-[#332B27] uppercase">
               Dr. Niva Jacob Practice
             </span>
           </div>
@@ -284,7 +288,7 @@ export const BookingWorkspace: React.FC = () => {
       </header>
 
       {/* Main Workspace */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-10 md:py-16">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10 md:py-16">
         
         {/* ================= STAGE 0: "Have we met before?" GATEWAY ================= */}
         {patientMode === 'prompt' && (
@@ -306,7 +310,7 @@ export const BookingWorkspace: React.FC = () => {
                   setPatientMode('new');
                   setCurrentStep(1);
                 }}
-                className="p-8 sm:p-10 rounded-3xl bg-white border border-[#332B27]/15 shadow-xs hover:shadow-md hover:border-[#B89552]/60 transition-all duration-300 cursor-pointer flex flex-col justify-between group min-h-[220px]"
+                className="p-5 sm:p-10 rounded-3xl bg-white border border-[#332B27]/15 shadow-xs hover:shadow-md hover:border-[#B89552]/60 transition-all duration-300 cursor-pointer flex flex-col justify-between group min-h-[220px]"
               >
                 <div>
                   <div className="w-12 h-12 rounded-2xl bg-[#F1E3A6] text-[#332B27] flex items-center justify-center mb-6">
@@ -333,7 +337,7 @@ export const BookingWorkspace: React.FC = () => {
                   setPatientMode('returning');
                   setReturningCustomTimeOpen(false);
                 }}
-                className="p-8 sm:p-10 rounded-3xl bg-white border border-[#332B27]/15 shadow-xs hover:shadow-md hover:border-[#B89552]/60 transition-all duration-300 cursor-pointer flex flex-col justify-between group min-h-[220px]"
+                className="p-5 sm:p-10 rounded-3xl bg-white border border-[#332B27]/15 shadow-xs hover:shadow-md hover:border-[#B89552]/60 transition-all duration-300 cursor-pointer flex flex-col justify-between group min-h-[220px]"
               >
                 <div>
                   <div className="w-12 h-12 rounded-2xl bg-[#332B27] text-white flex items-center justify-center mb-6">
@@ -368,7 +372,7 @@ export const BookingWorkspace: React.FC = () => {
           <div className="max-w-xl mx-auto py-6 animate-in fade-in">
             
             {/* Quick Profile Switcher for existing client demo */}
-            <div className="mb-6 flex items-center justify-between p-2 rounded-2xl bg-white border border-[#332B27]/10 text-xs font-sans-clean shadow-2xs">
+            <div className="mb-6 flex flex-wrap gap-2 items-center justify-between p-2 rounded-2xl bg-white border border-[#332B27]/10 text-xs font-sans-clean shadow-2xs">
               <span className="text-[#332B27]/60 pl-2">Select returning client demo:</span>
               <div className="flex items-center gap-1">
                 {SAMPLE_RETURNING_PATIENTS.map((p) => (
@@ -391,7 +395,7 @@ export const BookingWorkspace: React.FC = () => {
             </div>
 
             {/* Faster Flow Card from Exact User Specification */}
-            <div className="p-8 sm:p-12 rounded-[36px] bg-white border border-[#332B27]/15 shadow-sm space-y-8">
+            <div className="p-5 sm:p-12 rounded-[36px] bg-white border border-[#332B27]/15 shadow-sm space-y-8">
               
               <div>
                 <h2 className="font-editorial text-3xl sm:text-4xl text-[#332B27] font-normal">
@@ -464,7 +468,7 @@ export const BookingWorkspace: React.FC = () => {
                         <p className="text-xs font-semibold uppercase tracking-wider text-[#B89552] font-sans-clean mb-3">
                           Choose Alternative Date
                         </p>
-                        <div className="grid grid-cols-5 gap-2 font-sans-clean text-center">
+                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 font-sans-clean text-center">
                           {dateOptions.map((d) => (
                             <button
                               key={d.dateStr}
@@ -487,7 +491,7 @@ export const BookingWorkspace: React.FC = () => {
                         <p className="text-xs font-semibold text-[#332B27]/50 uppercase tracking-wider font-sans-clean mb-2.5">
                           Morning
                         </p>
-                        <div className="grid grid-cols-4 gap-2 font-mono-tabular">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono-tabular">
                           {morningSlots.map((time) => (
                             <button
                               key={time}
@@ -505,7 +509,7 @@ export const BookingWorkspace: React.FC = () => {
                         <p className="text-xs font-semibold text-[#332B27]/50 uppercase tracking-wider font-sans-clean mb-2.5">
                           Afternoon
                         </p>
-                        <div className="grid grid-cols-4 gap-2 font-mono-tabular">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono-tabular">
                           {afternoonSlots.map((time) => (
                             <button
                               key={time}
@@ -587,13 +591,13 @@ export const BookingWorkspace: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
               
               {/* Contextual Live Summary Card */}
-              <aside className="lg:col-span-4 flex flex-col space-y-6">
+              <aside className="order-2 lg:order-1 lg:col-span-4 min-w-0 flex flex-col space-y-6">
                 <div className="p-6 rounded-3xl bg-white border border-[#332B27]/10 shadow-xs space-y-4">
                   <p className="text-xs font-semibold uppercase tracking-wider text-[#B89552] font-sans-clean">
                     Session Summary
                   </p>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                     <img
                       src={drNivaPortrait}
                       alt={DOCTOR_INFO.name}
@@ -657,7 +661,7 @@ export const BookingWorkspace: React.FC = () => {
 
 
               {/* 3-Step Container */}
-              <section className="lg:col-span-8 bg-white p-6 sm:p-10 rounded-[36px] border border-[#332B27]/15 shadow-sm min-h-[520px] flex flex-col justify-between">
+              <section className="order-1 lg:order-2 lg:col-span-8 min-w-0 bg-white p-4 sm:p-10 rounded-[36px] border border-[#332B27]/15 shadow-sm min-h-[520px] flex flex-col justify-between">
                 
                 {/* STEP 01: Choose care */}
                 {currentStep === 1 && (
@@ -684,7 +688,7 @@ export const BookingWorkspace: React.FC = () => {
                           setSelectedService(srv);
                           setConsultingFor(srv.name);
                         }}
-                        className={`p-6 sm:p-7 rounded-2xl border transition-all cursor-pointer ${
+                        className={`p-4 sm:p-7 rounded-2xl border transition-all cursor-pointer ${
                           careCategory === 'consultation'
                             ? 'border-[#332B27] bg-[#FAF7F0] ring-1 ring-[#332B27]'
                             : 'border-[#332B27]/15 bg-white hover:border-[#332B27]/40 hover:bg-[#FAF7F0]/40'
@@ -713,7 +717,7 @@ export const BookingWorkspace: React.FC = () => {
                             setConsultingFor(srv.name);
                           }
                         }}
-                        className={`p-6 sm:p-7 rounded-2xl border transition-all cursor-pointer ${
+                        className={`p-4 sm:p-7 rounded-2xl border transition-all cursor-pointer ${
                           careCategory === 'therapy'
                             ? 'border-[#332B27] bg-[#FAF7F0] ring-1 ring-[#332B27]'
                             : 'border-[#332B27]/15 bg-white hover:border-[#332B27]/40 hover:bg-[#FAF7F0]/40'
@@ -781,7 +785,7 @@ export const BookingWorkspace: React.FC = () => {
                           setSelectedService(srv);
                           setConsultingFor(srv.name);
                         }}
-                        className={`p-6 sm:p-7 rounded-2xl border transition-all cursor-pointer ${
+                        className={`p-4 sm:p-7 rounded-2xl border transition-all cursor-pointer ${
                           careCategory === 'couples-therapy'
                             ? 'border-[#332B27] bg-[#FAF7F0] ring-1 ring-[#332B27]'
                             : 'border-[#332B27]/15 bg-white hover:border-[#332B27]/40 hover:bg-[#FAF7F0]/40'
@@ -832,7 +836,7 @@ export const BookingWorkspace: React.FC = () => {
 
                     {/* Clean Calendar Row: MON 12, TUE 13, WED 14, THU 15, FRI 16 */}
                     <div className="pt-2">
-                      <div className="grid grid-cols-5 gap-2 sm:gap-3">
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-3">
                         {dateOptions.map((d) => {
                           const isSelected = selectedDate === d.dateStr;
                           return (
@@ -864,7 +868,7 @@ export const BookingWorkspace: React.FC = () => {
                         <p className="text-xs font-semibold text-[#332B27]/50 uppercase tracking-wider font-sans-clean mb-3">
                           Morning
                         </p>
-                        <div className="grid grid-cols-4 gap-2.5 font-mono-tabular">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono-tabular">
                           {morningSlots.map((time) => {
                             const isSelected = selectedTime === time;
                             return (
@@ -890,7 +894,7 @@ export const BookingWorkspace: React.FC = () => {
                         <p className="text-xs font-semibold text-[#332B27]/50 uppercase tracking-wider font-sans-clean mb-3">
                           Afternoon
                         </p>
-                        <div className="grid grid-cols-4 gap-2.5 font-mono-tabular">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono-tabular">
                           {afternoonSlots.map((time) => {
                             const isSelected = selectedTime === time;
                             return (

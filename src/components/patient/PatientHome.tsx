@@ -24,7 +24,7 @@ export const PatientHome: React.FC = () => {
       <PatientNav />
 
       {/* Main Editorial Publication Storytelling Flow */}
-      <main className="flex-1 pb-20 md:pb-0">
+      <main className="flex-1 pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-0">
         
         {/* 1. Hero: Cinematic restrained split-screen with line-by-line masked reveals & organic form */}
         <HeroSection />
@@ -62,7 +62,7 @@ export const PatientHome: React.FC = () => {
       </main>
 
       {/* Mobile Sticky Bottom "Book appointment" Action Bar (<=15% mobile viewport height cap) */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-30 p-3 bg-[#FAF7F0]/95 backdrop-blur-md border-t border-[#332B27]/12 shadow-lg">
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-30 p-3 pb-[calc(12px+env(safe-area-inset-bottom))] bg-[#FAF7F0]/95 backdrop-blur-md border-t border-[#332B27]/12 shadow-lg">
         <button
           onClick={() => openBooking()}
           className="w-full py-3.5 px-4 rounded-full bg-[#332B27] text-[#FAF7F0] text-xs font-semibold tracking-wider uppercase flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.98] transition-transform"

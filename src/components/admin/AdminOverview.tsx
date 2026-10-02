@@ -68,7 +68,7 @@ export const AdminOverview: React.FC = () => {
         </div>
 
         {/* Chronological Timeline */}
-        <div className="bg-white rounded-3xl border border-[#332B27]/10 p-6 sm:p-10 shadow-xs divide-y divide-[#332B27]/10">
+        <div className="bg-white rounded-3xl border border-[#332B27]/10 p-4 sm:p-10 shadow-xs divide-y divide-[#332B27]/10">
           
           {timelineItems.length === 0 ? (
             <div className="py-12 text-center text-[#332B27]/50">
@@ -81,10 +81,10 @@ export const AdminOverview: React.FC = () => {
                 return (
                   <div 
                     key={`blocked-${item.id}-${index}`}
-                    className="py-5 sm:py-6 first:pt-0 last:pb-0 flex items-start gap-6 group transition-colors"
+                    className="py-5 sm:py-6 first:pt-0 last:pb-0 flex items-start gap-3 sm:gap-6 group transition-colors"
                   >
                     {/* Time */}
-                    <div className="w-16 sm:w-20 pt-1 shrink-0 font-mono-tabular font-medium text-sm text-[#332B27]/60">
+                    <div className="w-12 sm:w-20 pt-1 shrink-0 font-mono-tabular font-medium text-sm text-[#332B27]/60">
                       {item.time}
                     </div>
 
@@ -92,8 +92,8 @@ export const AdminOverview: React.FC = () => {
                     <div className="text-[#332B27]/30 select-none pt-1 hidden sm:block">───</div>
 
                     {/* Blocked Badge & Info */}
-                    <div className="flex-1 bg-[#F1E3A6]/25 border border-[#B89552]/30 rounded-2xl p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
+                    <div className="flex-1 min-w-0 bg-[#F1E3A6]/25 border border-[#B89552]/30 rounded-2xl p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+                      <div className="flex flex-wrap items-center gap-3">
                         <span className="px-2.5 py-1 rounded-md bg-[#F1E3A6] text-[#332B27] border border-[#B89552]/30 text-[11px] font-bold tracking-wider uppercase font-mono-tabular">
                           BLOCKED
                         </span>
@@ -114,10 +114,10 @@ export const AdminOverview: React.FC = () => {
                 <div 
                   key={apt.id}
                   onClick={() => openSideSheet(apt)}
-                  className="py-6 first:pt-0 last:pb-0 flex items-start gap-6 group hover:bg-[#FAF7F0]/40 -mx-4 px-4 rounded-2xl transition-all cursor-pointer"
+                  className="py-6 first:pt-0 last:pb-0 flex items-start gap-3 sm:gap-6 group hover:bg-[#FAF7F0]/40 -mx-4 px-4 rounded-2xl transition-all cursor-pointer"
                 >
                   {/* Time */}
-                  <div className="w-16 sm:w-20 pt-1 shrink-0 font-mono-tabular font-semibold text-base text-[#332B27]">
+                  <div className="w-12 sm:w-20 pt-1 shrink-0 font-mono-tabular font-semibold text-base text-[#332B27]">
                     {apt.time}
                   </div>
 
@@ -125,7 +125,7 @@ export const AdminOverview: React.FC = () => {
                   <div className="text-[#332B27]/30 select-none pt-1 hidden sm:block">───</div>
 
                   {/* Session Details */}
-                  <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
                       {/* Patient Name */}
                       <h3 className="font-editorial text-2xl text-[#332B27] font-medium group-hover:text-[#B89552] transition-colors">

@@ -155,3 +155,24 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Phone ergonomics: readable fields, touch targets, and fixed-header anchors. */
+@layer base {
+  html { scroll-padding-top: 100px; }
+  img { max-width: 100%; }
+  button, a, input, select, textarea { touch-action: manipulation; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid #B89552;
+    outline-offset: 3px;
+  }
+  @media (pointer: coarse) {
+    button, a { min-height: 44px; }
+    input:not([type="checkbox"]):not([type="radio"]), select { min-height: 44px; }
+  }
+}
+
+@media (max-width: 639px) {
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+    font-size: 16px;
+  }
+}

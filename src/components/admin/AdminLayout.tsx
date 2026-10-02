@@ -49,6 +49,10 @@ export const AdminLayout: React.FC = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [adminTab]);
+
   // Close notifications popover on click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -88,7 +92,7 @@ export const AdminLayout: React.FC = () => {
       
       {/* ================= COLLAPSIBLE SIDEBAR ================= */}
       <aside
-        className={`bg-white border-r border-[#332B27]/10 flex flex-col justify-between transition-all duration-200 sticky top-0 h-screen z-20 shrink-0 ${
+        className={`bg-white border-r border-[#332B27]/10 hidden lg:flex flex-col justify-between transition-all duration-200 sticky top-0 h-screen z-20 shrink-0 ${
           isSidebarCollapsed ? 'w-16' : 'w-64'
         }`}
       >
@@ -215,11 +219,11 @@ export const AdminLayout: React.FC = () => {
       <div className="flex-1 flex flex-col min-w-0">
         
         {/* TOP HEADER: DR. NIVA    ⌘ K     + Appointment */}
-        <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-[#332B27]/10 px-6 sm:px-10 h-16 flex items-center justify-between">
+        <header className="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-[#332B27]/10 px-4 sm:px-6 lg:px-10 min-h-16 py-3 gap-3 flex flex-wrap items-center justify-between">
           
           {/* Left Brand Identity */}
           <div className="flex items-center gap-4">
-            <span className="font-editorial text-xl sm:text-2xl font-semibold tracking-wider text-[#332B27] uppercase">
+            <span className="font-editorial text-lg sm:text-2xl font-semibold tracking-wider text-[#332B27] uppercase">
               DR. NIVA
             </span>
             <span className="text-[#332B27]/20 hidden sm:inline">|</span>
@@ -233,11 +237,12 @@ export const AdminLayout: React.FC = () => {
             {/* Search (⌘K) */}
             <button
               onClick={() => setIsCommandPaletteOpen(true)}
+              aria-label="Search workspace"
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#FAF7F0] border border-[#332B27]/10 text-xs text-[#332B27]/60 hover:text-[#332B27] hover:border-[#332B27]/30 transition-all cursor-pointer"
             >
               <Search className="w-3.5 h-3.5 text-[#332B27]/40" />
               <span className="hidden md:inline">Quick search</span>
-              <kbd className="px-1.5 py-0.5 rounded-md bg-white border border-[#332B27]/10 text-[10px] font-mono-tabular text-[#332B27]/70 font-semibold shadow-2xs">
+              <kbd className="hidden md:block px-1.5 py-0.5 rounded-md bg-white border border-[#332B27]/10 text-[10px] font-mono-tabular text-[#332B27]/70 font-semibold shadow-2xs">
                 ⌘ K
               </kbd>
             </button>
@@ -254,7 +259,7 @@ export const AdminLayout: React.FC = () => {
               </button>
 
               {isNotificationsOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-[#332B27]/10 p-4 z-50 animate-in fade-in duration-100">
+                <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-2rem))] bg-white rounded-2xl shadow-xl border border-[#332B27]/10 p-4 z-50 animate-in fade-in duration-100">
                   <div className="flex items-center justify-between pb-3 border-b border-[#332B27]/10">
                     <p className="text-xs font-semibold text-[#332B27]">Clinical Notifications</p>
                     <button
@@ -279,10 +284,11 @@ export const AdminLayout: React.FC = () => {
             {/* + Appointment */}
             <button
               onClick={() => openBooking()}
+              aria-label="New appointment"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#332B27] text-[#FAF7F0] text-xs font-semibold hover:bg-[#27201D] transition-colors shadow-xs cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Appointment</span>
+              <span className="hidden sm:inline">+ Appointment</span>
             </button>
 
             {/* Patient Website preview */}
@@ -298,7 +304,23 @@ export const AdminLayout: React.FC = () => {
         </header>
 
         {/* Tab View Body */}
-        <main className="flex-1 p-6 sm:p-10 overflow-y-auto">
+        <div className="lg:hidden px-4 py-3 bg-white border-b border-[#332B27]/10 flex items-center gap-3">
+          <label htmlFor="mobile-admin-section" className="text-xs font-semibold shrink-0">Workspace</label>
+          <select id="mobile-admin-section" value={adminTab} onChange={(event) => setAdminTab(event.target.value as AdminTab)} className="min-w-0 flex-1 rounded-xl border border-[#332B27]/20 bg-[#FAF7F0] p-3">
+            <optgroup label="Clinical">
+              <option value="overview">Overview</option><option value="schedule">Schedule</option>
+              <option value="appointments">Appointments</option><option value="patients">Patients</option>
+            </optgroup>
+            <optgroup label="Practice">
+              <option value="availability">Availability</option><option value="consultations">Consultations</option>
+              <option value="therapy">Therapy</option><option value="locations">Locations</option>
+              <option value="resources">Resources</option><option value="the-curly-shrink">The Curly Shrink</option>
+              <option value="website">Website</option><option value="notifications">Notifications</option><option value="settings">Settings</option>
+            </optgroup>
+          </select>
+          <button onClick={logoutAdmin} aria-label="Log out" className="p-3 rounded-xl border border-[#332B27]/10"><Lock className="w-4 h-4" /></button>
+        </div>
+        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-10 overflow-x-auto">
           {adminTab === 'overview' && <AdminOverview />}
           {adminTab === 'schedule' && <AdminSchedule />}
           {adminTab === 'appointments' && <AdminAppointments />}

@@ -146,7 +146,7 @@ const PatientDetailModalContent: React.FC<PatientDetailModalContentProps> = ({ p
     >
       <div 
         onClick={(e) => e.stopPropagation()}
-        className="bg-[#FAF7F0] w-full max-w-4xl rounded-[28px] border border-[#332B27]/15 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        className="bg-[#FAF7F0] w-full max-w-4xl rounded-[28px] border border-[#332B27]/15 shadow-2xl overflow-hidden flex flex-col max-h-[92dvh]"
       >
         {/* Top Header Card */}
         <div className="bg-white px-6 py-5 border-b border-[#332B27]/10 flex items-center justify-between shrink-0">
@@ -209,8 +209,8 @@ const PatientDetailModalContent: React.FC<PatientDetailModalContentProps> = ({ p
         </div>
 
         {/* Tab Switcher */}
-        <div className="bg-white px-6 pt-3 border-b border-[#332B27]/10 flex items-center justify-between shrink-0">
-          <div className="flex gap-6">
+        <div className="bg-white px-4 sm:px-6 pt-3 border-b border-[#332B27]/10 flex flex-wrap gap-3 items-center justify-between shrink-0">
+          <div className="flex flex-wrap gap-3 sm:gap-6">
             <button
               onClick={() => setActiveTab('notes')}
               className={`pb-3 text-xs font-semibold tracking-wide flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
@@ -258,7 +258,7 @@ const PatientDetailModalContent: React.FC<PatientDetailModalContentProps> = ({ p
         </div>
 
         {/* Modal Body Content (Scrollable) */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           
           {/* ===================== TAB 1: CONSULTATION NOTES ===================== */}
           {activeTab === 'notes' && (

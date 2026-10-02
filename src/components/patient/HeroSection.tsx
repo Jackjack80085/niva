@@ -79,7 +79,7 @@ export const HeroSection: React.FC = () => {
   return (
     <section 
       ref={containerRef}
-      className="relative overflow-hidden pt-28 pb-16 md:pt-36 md:pb-24 bg-[#FAF7F0] texture-paper min-h-[92vh] flex flex-col justify-between"
+      className="relative overflow-hidden pt-28 pb-12 md:pt-36 md:pb-24 bg-[#FAF7F0] texture-paper min-h-[92vh] flex flex-col justify-between"
     >
       {/* Soft ambient lighting glow */}
       <div className="absolute inset-0 ambient-ivory-glow pointer-events-none -z-10" />
@@ -90,13 +90,13 @@ export const HeroSection: React.FC = () => {
             Mobile: Photo first (order-1), Text follows (order-2)
             Desktop: Text left (lg:order-1), Photo right (lg:order-2)
         */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 lg:gap-14 items-center">
           
           {/* ================= LEFT: EDITORIAL NARRATIVE ================= */}
-          <div className="order-2 lg:order-1 lg:col-span-7 flex flex-col justify-center">
+          <div className="order-1 lg:col-span-7 flex flex-col justify-center">
             
             {/* Headline: Framer Motion Line-by-Line Masked Text Reveal */}
-            <h1 className="font-editorial text-5xl sm:text-6xl lg:text-[4.4rem] leading-[1.05] text-[#332B27] font-medium tracking-tight mb-8">
+            <h1 className="font-editorial text-[clamp(2.5rem,11vw,3.75rem)] sm:text-6xl lg:text-[4.4rem] leading-[1.05] text-[#332B27] font-medium tracking-tight mb-5 sm:mb-8">
               
               {/* Line 1 */}
               <span className="block overflow-hidden py-0.5 sm:py-1">
@@ -169,7 +169,7 @@ export const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: shouldReduceMotion ? 0.01 : 0.7, delay: 0.52, ease: editorialEase }}
-              className="text-base sm:text-lg text-[#332B27]/80 font-sans-clean leading-relaxed max-w-xl mb-9 font-light"
+              className="text-base sm:text-lg text-[#332B27]/80 font-sans-clean leading-relaxed max-w-xl mb-6 sm:mb-9 font-light"
             >
               A compassionate, evidence-based space for your mental health, relationships and sexual wellbeing.
             </motion.p>
@@ -179,11 +179,11 @@ export const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: shouldReduceMotion ? 0.01 : 0.7, delay: 0.62, ease: editorialEase }}
-              className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7 mb-10"
+              className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-7 mb-6 sm:mb-10"
             >
               <button
                 onClick={() => openBooking()}
-                className="btn-primary-editorial px-8 py-4 text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-xs flex items-center justify-center gap-2 cursor-pointer self-start sm:self-auto group"
+                className="btn-primary-editorial px-8 py-4 text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-xs flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto self-start sm:self-auto group"
               >
                 <span>BOOK A CONSULTATION</span>
                 <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
@@ -191,7 +191,7 @@ export const HeroSection: React.FC = () => {
 
               <button
                 onClick={scrollToConsultations}
-                className="editorial-link text-sm font-medium text-[#332B27] hover:text-[#B89552] py-2 cursor-pointer self-start sm:self-auto group"
+                className="editorial-link text-sm font-medium text-[#332B27] hover:text-[#B89552] py-2 cursor-pointer w-full sm:w-auto self-start sm:self-auto group"
               >
                 <span>Explore how I can help</span>
                 <span className="transition-transform group-hover:translate-x-1">→</span>
@@ -203,7 +203,7 @@ export const HeroSection: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: shouldReduceMotion ? 0.01 : 0.7, delay: 0.75 }}
-              className="pt-6 border-t border-[#332B27]/10 flex flex-wrap items-center gap-5 text-xs font-sans-clean text-[#332B27]/60"
+              className="pt-6 border-t border-[#332B27]/10 flex flex-wrap items-center gap-2 sm:gap-5 text-xs font-sans-clean text-[#332B27]/60"
             >
               <span className="font-medium text-[#332B27]">Mental Health</span>
               <span className="text-[#B89552]">•</span>
@@ -215,7 +215,7 @@ export const HeroSection: React.FC = () => {
           </div>
 
           {/* ================= RIGHT: LARGE PORTRAIT WITH ORGANIC PAINTED FORM & MOUSE PARALLAX ================= */}
-          <div className="order-1 lg:order-2 lg:col-span-5 flex justify-center items-center relative">
+          <div className="order-2 lg:col-span-5 flex justify-center items-center relative">
             
             {/* Irregular Butter-Yellow Organic Shape: Expands on load + smooth GPU mouse parallax depth (6–8px) */}
             <motion.div
@@ -256,7 +256,7 @@ export const HeroSection: React.FC = () => {
                 x: shouldReduceMotion ? 0 : portraitX,
                 y: shouldReduceMotion ? 0 : combinedPortraitY,
               }}
-              className="relative z-10 w-full max-w-xs sm:max-w-sm md:max-w-md"
+              className="relative z-10 w-full max-w-[240px] sm:max-w-sm md:max-w-md"
             >
               <div 
                 className="overflow-hidden bg-[#EAE3D2] shadow-xl border-4 border-white transition-all duration-500"
