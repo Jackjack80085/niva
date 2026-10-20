@@ -16,7 +16,21 @@ export interface ToastMessage {
   type?: 'success' | 'info' | 'alert';
 }
 
+export type Permission = 'appointments' | 'availability' | 'records' | 'tasks';
+export interface Associate { id: string; name: string; email: string; pin: string; enabled: boolean; permissions: Permission[] }
+export interface PracticeTask { id: string; title: string; assigneeId: string; done: boolean }
+function readSaved<T>(key: string, fallback: T): T { try { return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback; } catch { return fallback; } }
 interface AppContextType {
+  staffId: string;
+  associates: Associate[];
+  saveAssociates: (items: Associate[]) => void;
+  tasks: PracticeTask[];
+  saveTasks: (items: PracticeTask[]) => void;
+  can: (permission: Permission) => boolean;
+  setMeetingUrl: (id: string, url: string) => void;
+  timeOff: {id: string; start: string; end: string; reason: string}[];
+  saveTimeOff: (items: {id: string; start: string; end: string; reason: string}[]) => void;
+
   appointments: Appointment[];
   blockedSlots: BlockedSlot[];
   weeklyAvailability: DayAvailability[];
@@ -69,7 +83,7 @@ interface AppContextType {
   blockSlot: (date: string, time: string, clinicId?: string, reason?: string) => void;
   unblockSlot: (date: string, time: string) => void;
   toggleBlockSlot: (date: string, time: string, clinicId?: string, reason?: string) => void;
-  isSlotAvailable: (date: string, time: string, clinicId?: string) => boolean;
+  isSlotAvailable: (date: string, time: string, clinicId?: string, duration?: number, excludeId?: string) => boolean;
   updateDayAvailability: (day: string, updates: Partial<DayAvailability>) => void;
   duplicateScheduleToAllWeekdays: (sourceDay: string) => void;
 }
@@ -77,10 +91,17 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [appointments, setAppointments] = useState<Appointment[]>(INITIAL_APPOINTMENTS);
-  const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>(INITIAL_BLOCKED_SLOTS);
-  const [weeklyAvailability, setWeeklyAvailability] = useState<DayAvailability[]>(INITIAL_WEEKLY_AVAILABILITY);
+  const [appointments, setAppointments] = useState<Appointment[]>(() => readSaved('niva_appointments', INITIAL_APPOINTMENTS.map(a => ({...a, clinicId: 'online'}))));
+  const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>(() => readSaved('niva_blocks', INITIAL_BLOCKED_SLOTS));
+  const [weeklyAvailability, setWeeklyAvailability] = useState<DayAvailability[]>(() => readSaved('niva_hours', INITIAL_WEEKLY_AVAILABILITY));
   
+  const [staffId, setStaffId] = useState(() => sessionStorage.getItem('niva_staff') || 'doctor');
+  const [associates, saveAssociates] = useState<Associate[]>(() => readSaved('niva_associates', []));
+  const [tasks, saveTasks] = useState<PracticeTask[]>(() => readSaved('niva_tasks', []));
+  const [timeOff, saveTimeOff] = useState<{id: string; start: string; end: string; reason: string}[]>(() => readSaved('niva_leave', []));
+  const can = (permission: Permission) => isAdminAuthenticated && (staffId === 'doctor' || associates.some(a => a.id === staffId && a.enabled && a.permissions.includes(permission)));
+  useEffect(() => { for (const [key, value] of Object.entries({niva_appointments: appointments, niva_blocks: blockedSlots, niva_hours: weeklyAvailability, niva_associates: associates, niva_tasks: tasks, niva_leave: timeOff})) localStorage.setItem(key, JSON.stringify(value)); }, [appointments, blockedSlots, weeklyAvailability, associates, tasks, timeOff]);
+  const setMeetingUrl = (id: string, url: string) => { if (!can('appointments')) return; setAppointments(prev => prev.map(a => a.id === id ? {...a, meetingUrl: url} : a)); };
   // Clinical Notes & Prescriptions State
   const [consultationNotes, setConsultationNotes] = useState<ClinicalConsultationNote[]>(() => {
     if (typeof window !== 'undefined') {
@@ -125,7 +146,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   });
 
   const verifyAdminPasscode = (code: string): boolean => {
-    if (code.trim() === adminPasscode || code.trim() === '1234') {
+    const associate = associates.find(a => a.enabled && a.pin === code.trim());
+    if (code.trim() === adminPasscode || associate) {
+      const id = code.trim() === adminPasscode ? 'doctor' : associate!.id;
+      setStaffId(id); sessionStorage.setItem('niva_staff', id);
       setIsAdminAuthenticated(true);
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('dr_niva_admin_auth', 'true');
@@ -148,6 +172,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isPatientModalOpen, setIsPatientModalOpen] = useState<boolean>(false);
 
   const openPatientModal = (patient: Appointment) => {
+    if (!can('records')) return;
     setSelectedPatientForDetail(patient);
     setIsPatientModalOpen(true);
   };
@@ -158,9 +183,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addConsultationNote = (noteData: Omit<ClinicalConsultationNote, 'id' | 'createdAt'>): ClinicalConsultationNote => {
+    if (!can('records')) throw new Error('Clinical record access is restricted.');
     const newNote: ClinicalConsultationNote = {
       ...noteData,
-      id: 'note-' + Date.now(),
+      id: 'note-' + crypto.randomUUID(),
       createdAt: new Date().toISOString(),
     };
     setConsultationNotes((prev) => [newNote, ...prev]);
@@ -168,9 +194,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const addDigitalPrescription = (rxData: Omit<DigitalPrescription, 'id' | 'createdAt'>): DigitalPrescription => {
+    if (!can('records') || staffId !== 'doctor') throw new Error('Only the doctor can prescribe.');
     const newRx: DigitalPrescription = {
       ...rxData,
-      id: 'rx-' + Date.now(),
+      id: 'rx-' + crypto.randomUUID(),
       createdAt: new Date().toISOString(),
     };
     setDigitalPrescriptions((prev) => [newRx, ...prev]);
@@ -222,7 +249,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const handleHash = () => {
       const hash = window.location.hash.toLowerCase();
       if (hash === '#admin') {
-        if (isAdminAuthenticated) {
+        if (sessionStorage.getItem('dr_niva_admin_auth') === 'true') {
           setActiveViewState('admin');
         } else {
           setActiveViewState('admin-login');
@@ -297,36 +324,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsSideSheetOpen(false);
   };
 
-  // Check if a time slot is available
-  const isSlotAvailable = (date: string, time: string, clinicId?: string): boolean => {
-    // 1. Is it blocked explicitly?
-    const isBlocked = blockedSlots.some((b) => b.date === date && b.time === time);
-    if (isBlocked) return false;
-
-    // 2. Is there already an active confirmed/upcoming appointment?
-    const hasBooking = appointments.some(
-      (a) => a.date === date && a.time === time && a.status !== 'cancelled'
-    );
-    if (hasBooking) return false;
-
-    // 3. Check day availability if clinic specified
-    const dateObj = new Date(date + 'T00:00:00');
-    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
-    const dayConfig = weeklyAvailability.find((d) => d.day === dayName);
-    if (dayConfig && !dayConfig.enabled) {
-      return false;
-    }
-
-    return true;
+  const minutes = (time: string) => Number(time.split(':')[0]) * 60 + Number(time.split(':')[1]);
+  const isSlotAvailable = (date: string, time: string, clinicId?: string, duration = 20, excludeId?: string): boolean => {
+    if (new Date(`${date}T${time}:00+05:30`).getTime() <= Date.now()) return false;
+    const config = weeklyAvailability.find(d => d.day === new Date(date + 'T12:00:00').toLocaleDateString('en-US', {weekday: 'long'}));
+    if (!config?.enabled || minutes(time) < minutes(config.startTime) || minutes(time) + duration > minutes(config.endTime)) return false;
+    if (timeOff.some(t => date >= t.start && date <= t.end)) return false;
+    if (blockedSlots.some(b => b.date === date && minutes(time) < minutes(b.time) + 30 && minutes(time) + duration > minutes(b.time))) return false;
+    return !appointments.some(a => a.id !== excludeId && a.date === date && !['cancelled', 'rejected'].includes(a.status) && minutes(time) < minutes(a.time) + a.durationMin && minutes(time) + duration > minutes(a.time));
   };
 
   const bookAppointment = (payload: Omit<Appointment, 'id' | 'referenceNo' | 'createdAt' | 'status'>): Appointment => {
+    if (!isSlotAvailable(payload.date, payload.time, 'online', payload.durationMin)) throw new Error('This time is no longer available. Choose another slot.');
     const nextRefNum = 1042 + appointments.length;
     const newAppointment: Appointment = {
       ...payload,
       id: 'apt-' + Math.random().toString(36).substring(2, 9),
       referenceNo: `APT-${nextRefNum}`,
-      status: 'confirmed',
+      status: 'pending',
       createdAt: new Date().toISOString(),
       history: [
         {
@@ -340,8 +355,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setAppointments((prev) => [newAppointment, ...prev]);
 
     addToast({
-      title: 'Appointment Scheduled',
-      message: `Confirmed for ${payload.patientName} at ${payload.time} on ${payload.date}.`,
+      title: 'Request received',
+      message: `Pending approval for ${payload.patientName} at ${payload.time} on ${payload.date}.`,
       type: 'success',
     });
 
@@ -349,6 +364,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const rescheduleAppointment = (appointmentId: string, newDate: string, newTime: string) => {
+    if (!can('appointments')) return;
+    const target = appointments.find(a => a.id === appointmentId);
+    if (!target || !isSlotAvailable(newDate, newTime, 'online', target.durationMin, appointmentId)) { addToast({title: 'Unavailable time', message: 'Choose an available future slot.', type: 'alert'}); return; }
     setAppointments((prev) =>
       prev.map((apt) => {
         if (apt.id === appointmentId) {
@@ -377,18 +395,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     addToast({
       title: 'Appointment Rescheduled',
-      message: `Slot updated to ${newDate} at ${newTime}. Patient notified.`,
+      message: `Slot updated to ${newDate} at ${newTime}. Saved locally. Email delivery is not connected.`,
       type: 'info',
     });
   };
 
   const updateAppointmentStatus = (appointmentId: string, newStatus: AppointmentStatus) => {
+    if (!can('appointments')) return;
     setAppointments((prev) =>
       prev.map((apt) => {
         if (apt.id === appointmentId) {
           const updated: Appointment = {
             ...apt,
             status: newStatus,
+            history: [...(apt.history || []), {date: new Date().toISOString(), type: `Status: ${newStatus}`, summary: `Updated by ${staffId === "doctor" ? "doctor" : "associate"}.`}],
           };
           if (selectedAppointment?.id === appointmentId) {
             setSelectedAppointment(updated);
@@ -400,6 +420,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
 
     const labels: Record<AppointmentStatus, string> = {
+      pending: 'Awaiting approval',
+      rejected: 'Request declined',
       completed: 'Consultation marked as Completed',
       cancelled: 'Appointment Cancelled',
       confirmed: 'Appointment Confirmed',
@@ -415,6 +437,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const blockSlot = (date: string, time: string, clinicId: string = 'hsr', reason: string = 'Clinical consultation block') => {
+    if (!can('availability')) return;
     const alreadyBlocked = blockedSlots.some((b) => b.date === date && b.time === time);
     if (!alreadyBlocked) {
       const newBlock: BlockedSlot = {
@@ -434,6 +457,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const unblockSlot = (date: string, time: string) => {
+    if (!can('availability')) return;
     setBlockedSlots((prev) => prev.filter((b) => !(b.date === date && b.time === time)));
     addToast({
       title: 'Slot Released',
@@ -452,6 +476,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const updateDayAvailability = (day: string, updates: Partial<DayAvailability>) => {
+    if (!can('availability')) return;
     setWeeklyAvailability((prev) =>
       prev.map((item) => (item.day === day ? { ...item, ...updates } : item))
     );
@@ -492,6 +517,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider
       value={{
+        staffId, associates, saveAssociates, tasks, saveTasks, can, setMeetingUrl, timeOff, saveTimeOff,
         appointments,
         blockedSlots,
         weeklyAvailability,

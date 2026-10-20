@@ -69,7 +69,7 @@ export interface Clinic {
   image?: string;
 }
 
-export type AppointmentStatus = 'upcoming' | 'completed' | 'confirmed' | 'blocked' | 'cancelled';
+export type AppointmentStatus = 'pending' | 'rejected' | 'upcoming' | 'completed' | 'confirmed' | 'blocked' | 'cancelled';
 
 export interface ClinicalConsultationNote {
   id: string;
@@ -122,6 +122,7 @@ export interface Appointment {
   durationMin: number;
   status: AppointmentStatus;
   fee: number;
+  meetingUrl?: string;
   notes?: string;
   history?: Array<{
     date: string;

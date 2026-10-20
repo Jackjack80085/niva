@@ -32,3 +32,13 @@ No environment variables are required by the current frontend. The `.env.example
 The admin passcode is verified in client-side code and is only a demo gate. Notes and prescriptions are stored in the current browser; there is no shared server database or backend authentication. Add server-side authentication, authorization, and durable data storage before using the dashboard with real patient data.
 
 The exported application currently displays Dr. Niva Jacob branding despite the archive referring to Dr. Siddharth Sen. Review the branding and sample content before public launch.
+
+## Online practice preview
+
+All appointments use online consultations in IST. Booking requests start as pending; the doctor or an authorized associate can accept, decline, reschedule, complete, or cancel them. Accepted bookings support a manually supplied HTTPS video meeting link. No meeting provider or email delivery is connected.
+
+Open `#admin-portal` and use doctor demo PIN `2026`. In Team & access, create local associate profiles with unique four-digit demo PINs and grant appointment, availability, or task access. Patient notes and prescription drafts remain doctor-only. Weekly hours, full-day leave ranges, and 30-minute blocks determine available booking times. Existing appointments remain scheduled when availability changes.
+
+Appointments, schedules, associates, tasks, notes, and prescription drafts persist only in localStorage for this browser and origin. This does not provide real authentication, server-enforced permissions, cross-device booking synchronization, transactional concurrency protection, backups, email notifications, or production clinical record storage. Use sample data only. No Supabase dependency has been added. Browser storage clearing removes locally saved data.
+
+Before launch, connect these workflows to a backend with individual staff authentication, permission enforcement, durable records, concurrency-safe booking, backups, and a chosen video/email service. Verify clinician credentials and replace demonstration content.

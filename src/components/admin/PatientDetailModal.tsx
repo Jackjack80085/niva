@@ -42,14 +42,12 @@ const PatientDetailModalContent: React.FC<PatientDetailModalContentProps> = ({ p
 
   // Filter notes for this patient by email or name
   const patientNotes = consultationNotes.filter(
-    (n) => n.patientEmail.toLowerCase() === patient.patientEmail.toLowerCase() ||
-           n.patientName.toLowerCase() === patient.patientName.toLowerCase()
+    (n) => n.patientEmail.toLowerCase() === patient.patientEmail.toLowerCase()
   );
 
   // Filter prescriptions for this patient
   const patientRxList = digitalPrescriptions.filter(
-    (rx) => rx.patientEmail.toLowerCase() === patient.patientEmail.toLowerCase() ||
-            rx.patientName.toLowerCase() === patient.patientName.toLowerCase()
+    (rx) => rx.patientEmail.toLowerCase() === patient.patientEmail.toLowerCase()
   );
 
   // All consultations for this patient
@@ -60,19 +58,19 @@ const PatientDetailModalContent: React.FC<PatientDetailModalContentProps> = ({ p
   // New Note Form State
   const [noteSessionNum, setNoteSessionNum] = useState(patientNotes.length + 1);
   const [noteDate, setNoteDate] = useState(new Date().toISOString().split('T')[0]);
-  const [noteSickness, setNoteSickness] = useState(patient.sickness || patient.consultingFor || patient.reason || 'General Clinical Consultation');
-  const [noteMse, setNoteMse] = useState('Alert, oriented x 3, cooperative, coherent thought process, mild anxiety evident.');
+  const [noteSickness, setNoteSickness] = useState(patient.sickness || '');
+  const [noteMse, setNoteMse] = useState('');
   const [noteObservations, setNoteObservations] = useState('');
-  const [noteInterventions, setNoteInterventions] = useState('Cognitive restructuring, Somatic grounding & Breath titration');
+  const [noteInterventions, setNoteInterventions] = useState('');
   const [noteProgress, setNoteProgress] = useState<'significant_improvement' | 'moderate_progress' | 'stable' | 'needs_adjustment'>('moderate_progress');
-  const [notePlan, setNotePlan] = useState('Continue daily grounding exercises. Maintain thought log. Follow-up next week.');
+  const [notePlan, setNotePlan] = useState('');
 
   // New Prescription Form State
-  const [rxDiagnosis, setRxDiagnosis] = useState(patient.sickness || patient.consultingFor || 'Anxiety & Stress-Related Disorder');
-  const [rxDirectives, setRxDirectives] = useState('1. Practice 4-7-8 breathing twice daily (5 mins)\n2. Maintain daily thought-record log\n3. Engage in gentle somatic movement before sleep');
-  const [rxSupplements, setRxSupplements] = useState('Magnesium Glycinate 250mg at bedtime\nChamomile / herbal calming tea evening');
-  const [rxLifestyle, setRxLifestyle] = useState('No screen exposure 30 mins before sleep. Limit caffeine after 2:00 PM.');
-  const [rxFollowUp, setRxFollowUp] = useState('In 7 days / Next scheduled online consultation');
+  const [rxDiagnosis, setRxDiagnosis] = useState('');
+  const [rxDirectives, setRxDirectives] = useState('');
+  const [rxSupplements, setRxSupplements] = useState('');
+  const [rxLifestyle, setRxLifestyle] = useState('');
+  const [rxFollowUp, setRxFollowUp] = useState('');
 
   const handleSaveNote = (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,12 +125,12 @@ const PatientDetailModalContent: React.FC<PatientDetailModalContentProps> = ({ p
       followUpDate: rxFollowUp,
       doctorName: DOCTOR_INFO.name,
       doctorCredentials: DOCTOR_INFO.qualifications,
-      registrationNumber: 'RCI Reg. No. A-48291',
+      registrationNumber: DOCTOR_INFO.registrationNo,
     });
 
     addToast({
-      title: 'Digital Prescription Issued',
-      message: `Prescription #${newRx.prescriptionNumber} generated and signed.`,
+      title: 'Prescription Draft Saved',
+      message: `Prescription #${newRx.prescriptionNumber} saved locally as a draft.`,
       type: 'success',
     });
 
@@ -397,7 +395,7 @@ const PatientDetailModalContent: React.FC<PatientDetailModalContentProps> = ({ p
                   <FileText className="w-10 h-10 text-[#332B27]/30 mx-auto mb-3" />
                   <h4 className="font-editorial text-xl text-[#332B27]">No consultation notes recorded yet</h4>
                   <p className="text-xs text-[#332B27]/60 mt-1 max-w-sm mx-auto font-sans-clean">
-                    Click "Take Consultation Note" above to write and permanently store clinical observations for this patient.
+                    Click "Take Consultation Note" above to write and save locally clinical observations for this patient.
                   </p>
                 </div>
               ) : (
@@ -624,7 +622,7 @@ const PatientDetailModalContent: React.FC<PatientDetailModalContentProps> = ({ p
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#332B27]/15 hover:border-[#B89552] hover:bg-[#FAF7F0] text-[#332B27] text-xs font-semibold shadow-2xs transition-all cursor-pointer shrink-0 self-start sm:self-auto group/btn"
                       >
                         <Printer className="w-4 h-4 text-[#B89552]" />
-                        <span>Print / View Official Rx</span>
+                        <span>Print / View Prescription Draft</span>
                       </button>
                     </div>
 
@@ -802,7 +800,7 @@ const PatientDetailModalContent: React.FC<PatientDetailModalContentProps> = ({ p
               </div>
               <div>
                 <span className="text-[#332B27]/50 text-[10px] block uppercase">Delivery Mode</span>
-                <span className="font-semibold text-[#B89552]">Encrypted Video Suite</span>
+                <span className="font-semibold text-[#B89552]">Online consultation</span>
               </div>
             </div>
 
