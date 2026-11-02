@@ -121,6 +121,7 @@ export interface Appointment {
   time: string; // HH:MM (e.g. "10:30")
   durationMin: number;
   status: AppointmentStatus;
+  paymentStatus?: 'not_required' | 'pending' | 'paid';
   fee: number;
   meetingUrl?: string;
   notes?: string;

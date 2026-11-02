@@ -69,13 +69,6 @@ export const PatientNav: React.FC = () => {
           {/* Desktop Navigation Links - Extremely Minimal */}
           <nav className="hidden xl:flex items-center gap-7 text-[13px] font-sans-clean font-medium text-[#332B27]/80">
             <button
-              onClick={() => scrollToSection('about')}
-              className="hover:text-[#332B27] transition-colors cursor-pointer py-1"
-            >
-              About
-            </button>
-
-            <button
               onClick={() => scrollToSection('consultations')}
               className="hover:text-[#332B27] transition-colors cursor-pointer py-1"
             >
@@ -153,12 +146,6 @@ export const PatientNav: React.FC = () => {
               id="patient-mobile-menu"
               className="xl:hidden max-h-[calc(100dvh-150px)] overflow-y-auto mt-4 pt-4 border-t border-[#332B27]/10 space-y-3 bg-[#FAF7F0] rounded-2xl p-4 shadow-lg pointer-events-auto"
             >
-              <button
-                onClick={() => scrollToSection('about')}
-                className="block w-full text-left py-2 text-base font-editorial text-[#332B27]"
-              >
-                About
-              </button>
               <button
                 onClick={() => scrollToSection('consultations')}
                 className="block w-full text-left py-2 text-base font-editorial text-[#332B27]"

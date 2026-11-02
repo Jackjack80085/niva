@@ -86,6 +86,10 @@ interface AppContextType {
   isSlotAvailable: (date: string, time: string, clinicId?: string, duration?: number, excludeId?: string) => boolean;
   updateDayAvailability: (day: string, updates: Partial<DayAvailability>) => void;
   duplicateScheduleToAllWeekdays: (sourceDay: string) => void;
+
+  // External submission
+  syncToGoogleSheet: (payload: Record<string, string | number | boolean | null | undefined>) => Promise<void>;
+  lookupAppointmentByContact: (patientName: string, patientEmail: string, patientPhone: string) => Appointment | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -342,6 +346,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       id: 'apt-' + Math.random().toString(36).substring(2, 9),
       referenceNo: `APT-${nextRefNum}`,
       status: 'pending',
+      paymentStatus: 'pending',
       createdAt: new Date().toISOString(),
       history: [
         {
@@ -353,6 +358,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
 
     setAppointments((prev) => [newAppointment, ...prev]);
+    void syncToGoogleSheet({
+      id: newAppointment.id,
+      referenceNo: newAppointment.referenceNo,
+      patientName: newAppointment.patientName,
+      patientEmail: newAppointment.patientEmail,
+      patientPhone: newAppointment.patientPhone,
+      serviceId: newAppointment.serviceId,
+      consultingFor: newAppointment.consultingFor || newAppointment.serviceId,
+      date: newAppointment.date,
+      time: newAppointment.time,
+      durationMin: newAppointment.durationMin,
+      fee: newAppointment.fee,
+      status: 'pending',
+      paymentStatus: 'pending',
+      createdAt: newAppointment.createdAt,
+      reason: newAppointment.reason || '',
+    });
 
     addToast({
       title: 'Request received',
@@ -408,6 +430,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const updated: Appointment = {
             ...apt,
             status: newStatus,
+            paymentStatus: newStatus === 'confirmed' || newStatus === 'upcoming' || newStatus === 'completed' ? 'pending' : apt.paymentStatus,
             history: [...(apt.history || []), {date: new Date().toISOString(), type: `Status: ${newStatus}`, summary: `Updated by ${staffId === "doctor" ? "doctor" : "associate"}.`}],
           };
           if (selectedAppointment?.id === appointmentId) {
@@ -514,6 +537,38 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const syncToGoogleSheet = async (payload: Record<string, string | number | boolean | null | undefined>) => {
+    const scriptUrl = (typeof window !== 'undefined' && window.localStorage.getItem('niva_google_script_url')) || '';
+    if (!scriptUrl) return;
+
+    try {
+      await fetch(scriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'appointment',
+          payload,
+          submittedAt: new Date().toISOString(),
+        }),
+      });
+    } catch (error) {
+      console.warn('Google Sheets sync failed:', error);
+    }
+  };
+
+  const lookupAppointmentByContact = (patientName: string, patientEmail: string, patientPhone: string) => {
+    const normalizedName = patientName.trim().toLowerCase();
+    const normalizedEmail = patientEmail.trim().toLowerCase();
+    const normalizedPhone = patientPhone.replace(/\s+/g, '').trim();
+
+    return appointments.find((appointment) => {
+      const nameMatch = appointment.patientName.trim().toLowerCase() === normalizedName;
+      const emailMatch = appointment.patientEmail.trim().toLowerCase() === normalizedEmail;
+      const phoneMatch = appointment.patientPhone.replace(/\s+/g, '') === normalizedPhone;
+      return nameMatch && (emailMatch || phoneMatch);
+    }) || null;
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -559,6 +614,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isSlotAvailable,
         updateDayAvailability,
         duplicateScheduleToAllWeekdays,
+        syncToGoogleSheet,
+        lookupAppointmentByContact,
       }}
     >
       {children}

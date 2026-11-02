@@ -275,9 +275,6 @@ export const HeroSection: React.FC = () => {
               {/* Verified Clinical Indicator */}
               <div className="absolute -bottom-3 -left-3 sm:-left-4 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-[#332B27]/10 shadow-xs flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                <span className="text-[11px] font-sans-clean font-medium text-[#332B27]">
-                  Consulting Online · Pan-India
-                </span>
               </div>
             </motion.div>
 
