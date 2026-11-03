@@ -128,8 +128,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
   useEffect(() => {
     let active=true;
-    api<{authenticated:boolean}>('/admin/session').then(() => {
-      if(!active)return;
+    api<{authenticated:boolean}>('/admin/session').then(data => {
+      if(!active||data.authenticated!==true)return;
       setIsAdminAuthenticated(true);setStaffId('doctor');
       sessionStorage.setItem('dr_niva_admin_auth','true');
       if(['#admin','#admin-portal'].includes(window.location.hash))setActiveViewState('admin');
@@ -157,7 +157,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return()=>window.clearInterval(timer);
   },[patientBookingId,isAdminAuthenticated]);
   const verifyAdminPasscode = async (code:string):Promise<boolean> => {
-    try {await api('/admin/login',{method:'POST',body:JSON.stringify({password:code})});setStaffId('doctor');setIsAdminAuthenticated(true);sessionStorage.setItem('dr_niva_admin_auth','true');setActiveViewState('admin');window.location.hash='admin';return true;} catch {return false;}
+    const result=await api<{authenticated:boolean}>('/admin/login',{method:'POST',body:JSON.stringify({password:code})});
+    if(result.authenticated!==true)throw new Error('The backend did not confirm your sign-in.');
+    setStaffId('doctor');setIsAdminAuthenticated(true);sessionStorage.setItem('dr_niva_admin_auth','true');setActiveViewState('admin');window.location.hash='admin';return true;
   };
   const logoutAdmin = () => {
     void api('/admin/logout',{method:'POST'}).then(()=>{

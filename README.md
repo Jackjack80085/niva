@@ -1,25 +1,23 @@
 # Dr. Niva Jacob — online practice
 
-React/TypeScript frontend with a Node 24 Express/SQLite booking backend.
+React/TypeScript frontend with a Node 24 Express booking API. Vercel serves the frontend and runs the API as a Function; shared Postgres stores bookings, sessions, approvals and event registrations. Local development uses encrypted SQLite by default.
 
 ```sh
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-Open localhost:3000. An application firewall gateway runs on localhost:3000, with a private API on 127.0.0.1:3001 and private Vite on 127.0.0.1:3002. The local development admin password is `2026`; override ADMIN_PASSWORD in `.env.local`. Production requires a password of at least 12 characters.
+Open localhost:3000. The local gateway forwards to a private API on 127.0.0.1:3001 and Vite on 127.0.0.1:3002. The development admin password is `2026`; override ADMIN_PASSWORD in `.env.local`.
 
-Booking requests are stored in SQLite and shared with the admin dashboard. The flow is request → admin approval → approval email/payment access → verified captured payment → Google Calendar confirmation. Provider credentials are optional during development; missing services explicitly report setup pending and jobs remain retryable.
+For Vercel, configure production-only DATABASE_URL (or POSTGRES_URL), ADMIN_PASSWORD (at least 12 characters), DATA_ENCRYPTION_KEY (64 hex characters), APP_URL (the public HTTPS origin), CRON_SECRET and NODEJS_HELPERS=0. Deploy the existing project with its included `vercel.json`. `/api/*` routes to `api/index.ts`; frontend routes retain their SPA fallback. The function uses Node 24 in Singapore (`sin1`). Preview deployments need their own isolated database and environment settings and fail closed until configured.
 
-The calendar, Resend and Razorpay adapters are implemented but **not connected to live accounts**. Google Calendar credentials can be supplied later. Providers are explicitly disabled by default. Email and payment credentials are also needed to activate their respective services.
-
-See [backend setup and API guide](server/README.md) for environment variables, endpoints, security boundaries, persistence, deployment and current limitations.
+The booking flow is request → admin approval → payment access → verified captured payment → Google Calendar confirmation. Calendar, email and payment adapters are implemented but intentionally disabled until their accounts are configured. Missing providers report setup pending; queued work remains retryable.
 
 ```sh
 npm test
 npm run lint
 npm run build
-npm start
 ```
 
-`npm start` launches the public filtering gateway and private API on a persistent Node 24 server. Production requires a strong admin password and an external encryption key. See server/SECURITY.md for the protection model and deployment requirements. The included Vercel configuration supports a static frontend export only; it is not a full-stack deployment for this backend.
+See [backend setup and API guide](server/README.md) and [security boundaries](server/SECURITY.md). `npm start` remains available for a persistent Node installation with the local filtering gateway; Vercel uses the exported Function instead.

@@ -1,79 +1,82 @@
 # Booking backend
 
-Node.js 24, Express and SQLite. `npm run dev` starts the API on 127.0.0.1:3001 and the public application gateway on localhost:3000 and private Vite on 127.0.0.1:3002. The gateway forwards API requests to the private API and browser assets to Vite. Existing frontend booking and dashboard views use these endpoints.
+Node 24 and Express, with shared Postgres for Vercel and encrypted SQLite for local development. The frontend and API use the same origin.
 
-## Start locally
+## Local development
 
 ```sh
 npm ci
 cp .env.example .env.local
-# Set ADMIN_PASSWORD in .env.local. Default 2026 is development-only.
 npm run dev
 ```
 
-The database is `data/niva.sqlite` by default and survives process/browser restarts. Private JSON records are encrypted using AES-256-GCM; see SECURITY.md for keys, backups and metadata limitations. Database and environment files are ignored by Git. Customer access tokens are kept in sessionStorage and private email links; appointment records are stored on the server, not in browser storage. A new device must verify an emailed code to recover a request. Without an email provider, an existing device/access link still works, while cross-device recovery reports that email setup is pending.
+The public gateway listens on localhost:3000 and forwards to the private API on 127.0.0.1:3001 and Vite on 127.0.0.1:3002. SQLite defaults to `data/niva.sqlite`; the local admin password defaults to `2026`. Override ADMIN_PASSWORD before sharing a development environment. Database, key and environment files are ignored by Git.
 
-## Booking lifecycle
+## Vercel deployment
 
-1. `GET /api/availability?month=YYYY-MM&serviceId=...` returns available slots, never patient details. The server owns service prices, durations, hours and interval checks. When Google is configured, the server subtracts its busy intervals; provider errors fail closed.
-2. `POST /api/appointments` creates a pending request. Send a unique `Idempotency-Key` header and name, email, international phone, date, time and serviceId. The response contains the appointment and its private access token. Submitted fee/status/payment fields are ignored. An SQLite transaction protects overlapping intervals.
-3. The server-authenticated admin approves or declines at `POST /api/admin/appointments/:id/decision` with `{decision:"approve"}` or `{decision:"decline"}`. Approval queues a private payment-access email. Neither approval nor a pending request creates a Google event.
-4. The approved patient calls `POST /api/appointments/:id/payment/order`. The server creates/reuses the Razorpay order for the stored price. No charge endpoint exists before approval.
-5. Checkout success calls `/payment/verify`. The server verifies Razorpay's HMAC and independently fetches the payment to verify **captured** status, exact amount, currency and order. Signed `payment.captured` webhooks provide the same fallback. Browser success alone does not mark an appointment paid.
-6. Verified capture queues one calendar job. Successful event insertion updates `calendarStatus` and queues the final confirmation email. Missing configuration remains explicitly blocked/retryable; a calendar conflict requires staff review and is never reported as confirmed.
+The existing Vercel project builds the frontend into `dist/`. `api/index.ts` exports `server/vercel.ts` as a Function without opening a listening port or writing a temporary database. The API rewrite precedes the SPA fallback, so `/api/admin/login` reaches Express instead of `index.html`. Node 24 runs in `sin1`, with a 120-second invocation limit.
 
-Pending and approved requests hold their intervals in this application's database. These holds do not block the independent Google booking page until a paid event is synced. There is no atomic transaction across external Google booking and payment systems: an external calendar change can race with payment. Such conflicts are flagged for staff review; automatic refunds are not implemented. Do not enable live payments before calendar configuration has been tested.
+Set these server-only variables for **Production**, then deploy:
 
-## Provider setup (later)
+| Variable | Requirement |
+| --- | --- |
+| DATABASE_URL or POSTGRES_URL | Shared Postgres connection string, preferably the provider's pooled endpoint. Remote connections require verified TLS. |
+| ADMIN_PASSWORD | Unique password of at least 12 characters. |
+| DATA_ENCRYPTION_KEY | 32 random bytes encoded as 64 hex characters. Preserve separately from the database. |
+| APP_URL | Exact public HTTPS origin, such as `https://niva-wheat.vercel.app`. |
+| CRON_SECRET | Random secret used to authenticate Vercel's scheduled job request. |
+| NODEJS_HELPERS | `0`, so Express receives the original Node request and parses the body itself. |
+| ENABLE_PAYMENTS, ENABLE_CALENDAR, ENABLE_EMAIL | Keep `false` until intentionally configuring and testing the respective providers. |
 
-All credentials are server-only environment variables. Providers are disabled by default; their corresponding ENABLE_CALENDAR, ENABLE_PAYMENTS or ENABLE_EMAIL must also be true when intentionally connecting them later. Never use a `VITE_` prefix for secrets.
+Never prefix secrets with `VITE_`. The schema initializes automatically and verifies the encryption key. Postgres transactions and advisory locks coordinate booking intervals, idempotency and mutations across Function instances. Sessions and approvals survive cold starts and redeployments.
 
-- **Google:** enable Calendar API; obtain the owner's calendar ID and server OAuth refresh token using `calendar.events` and `calendar.events.freebusy` scopes. Configure GOOGLE_CALENDAR_ID, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_REFRESH_TOKEN. The appointment-schedule URL is not a Calendar ID. Tokens are refreshed server-side; no service account or public calendar is required.
-- **Razorpay:** set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET, configure automatic capture and the `payment.captured` webhook at `https://your-app/api/webhooks/razorpay`; set RAZORPAY_WEBHOOK_SECRET to its secret. Use test-mode keys and test payments first. Only the public checkout key goes to the client.
-- **Email:** set RESEND_API_KEY and a verified MAIL_FROM sender. Approval emails link to APP_URL with private credentials in the URL fragment. No diagnosis or patient reason is put in emails or calendar titles.
-- After configuration, restart the API and use **Connected services → Retry after configuring services** in the admin dashboard. Jobs run every ten seconds, with capped exponential retries for temporary failures. Persistent provider failures and conflicts are shown in the job list.
+Production credentials must not be shared automatically with every Preview deployment. A preview needs its own database, encryption key and admin credentials; its origin is derived from VERCEL_URL. An unconfigured preview fails closed. Do not use SQLite or `/tmp` for durable Vercel storage.
 
-Provider adapters are implemented and covered by mocked HTTP tests. No live account authentication, real email delivery, charges, or calendar writes have been performed in this workspace.
+Vercel's managed platform protection is the outer layer in this deployment; API authentication, validation and rate controls remain the inner layer. The custom local gateway does not run on Vercel. See [SECURITY.md](SECURITY.md) for the boundaries.
 
-## Calendar and availability API
+## Booking lifecycle and access
 
-- `GET /api/admin/calendar?start=YYYY-MM-DD` reads seven days from the configured Google calendar with recurrence expansion and pagination. The UI refreshes every minute and when the tab becomes visible. With no credentials it returns `{connected:false,events:[]}` rather than fabricated appointments.
-- `GET` / `PUT /api/admin/availability` reads/updates seven weekly rules for **this custom booking UI**. Google's published API does not edit Appointment Schedule weekly-hours settings; manage those settings in Google if retaining its hosted booking page.
-- `POST /api/admin/blocks` accepts future ISO `start` and `end`. Overlaps with existing requests are rejected. Busy events use deterministic app-owned IDs. `DELETE /api/admin/blocks/:id` removes only the matching app-created event, never existing patient appointments.
-- `GET /api/admin/jobs` lists delivery status, excluding payloads/access tokens; `POST /api/admin/jobs/retry` retries blocked/failed jobs.
+1. `GET /api/availability?month=YYYY-MM&serviceId=...` returns slots using server-owned prices, durations and hours. A configured Google calendar removes busy intervals; provider errors fail closed.
+2. `POST /api/appointments` accepts name, email, international phone, date, time and serviceId, with a unique `Idempotency-Key` header. The response includes the appointment and a private access token. A shared database transaction prevents overlapping requests and duplicate retries. Client-supplied fee, status and payment fields are ignored.
+3. An authenticated admin approves or declines through `POST /api/admin/appointments/:id/decision`. Approval queues a private payment-access email; it does not create a Google event.
+4. The approved patient requests `/api/appointments/:id/payment/order`. The backend creates or reuses the order for the stored price.
+5. `/payment/verify` validates the payment signature and independently checks captured status, amount, currency and order. Signed `payment.captured` webhooks provide the same fallback. Browser success alone cannot mark a booking paid.
+6. Verified capture queues calendar confirmation, then the final email. Missing configuration remains blocked/retryable; conflicts require staff review.
 
-## Authentication and deployment
+Private status and checkout endpoints require the booking's bearer access token. The browser retains it in sessionStorage. Recovery on another device requires an emailed, single-use verification code through `/api/lookup/start` and `/api/lookup/verify`. With email disabled, existing access links still work but cross-device recovery reports setup pending.
 
-Admin sessions are random, hashed in SQLite, expire after eight hours, and use HttpOnly/SameSite=Strict cookies (Secure in production). Mutations require the exact APP_URL origin. Login, booking and lookup endpoints have rate limits. No client-side PIN grants API access. The legacy unused clinical components are not routed in the active dashboard.
+Pending and approved requests hold intervals in this application's database. They do not block the independent Google booking page until a paid event is synced. Google and payment systems cannot share an atomic transaction: conflicts are flagged for staff review. Automatic refunds are not implemented.
+
+## Providers and background delivery
+
+Providers are intentionally off until ENABLE_CALENDAR, ENABLE_PAYMENTS or ENABLE_EMAIL is set to `true` along with the respective credentials:
+
+- **Google:** GOOGLE_CALENDAR_ID, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET and GOOGLE_REFRESH_TOKEN. Authorize the calendar owner with `calendar.events` and `calendar.events.freebusy`. The public appointment-schedule URL is not a Calendar ID.
+- **Razorpay:** RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET and RAZORPAY_WEBHOOK_SECRET. Configure automatic capture and the `payment.captured` webhook at `/api/webhooks/razorpay`. Test calendar handling and test-mode payments before enabling live charges.
+- **Email:** RESEND_API_KEY and a verified MAIL_FROM sender. Approval links carry private credentials in the URL fragment. Clinical reasons are excluded from email bodies and calendar titles.
+
+On Vercel, successful API activity triggers queued work through `waitUntil`. Jobs use database leases so concurrent instances do not claim the same active job; expired leases can be recovered. Provider calls use idempotent identifiers where supported. Temporary failures use capped exponential retries. The Hobby-compatible daily cron (`0 0 * * *`, UTC) calls `/api/cron/jobs` with CRON_SECRET as a fallback. There is no ten-second timer on Vercel, and retries during an idle period may wait for activity or the next cron. The persistent local Node launcher retains its ten-second timer.
+
+After configuring providers, redeploy and use **Connected services → Retry after configuring services**. No live email, charge or calendar write is performed by the test suite.
+
+## Admin and event endpoints
+
+- Admin authentication: `/api/admin/login`, `/session`, `/logout`. Hashed random sessions expire after eight hours; cookies are HttpOnly, SameSite=Strict and Secure in production. Mutation origins must match the configured app origin.
+- `/api/admin/appointments` lists approval requests. `/api/admin/calendar?start=YYYY-MM-DD` reads the configured Google calendar for seven days; without credentials it returns `{connected:false,events:[]}`.
+- `/api/admin/availability` reads or updates weekly rules for this custom booking UI. Google's Appointment Schedule hours must be edited in Google.
+- `/api/admin/blocks` adds or deletes future busy intervals, rejecting appointment overlaps and syncing only app-owned Google events.
+- `/api/admin/jobs` lists delivery status without private payloads; `/api/admin/jobs/retry` retries blocked or failed work.
+- `/api/admin/event` edits one event/community draft; `/visibility` publishes or hides it. `/api/events` exposes only an enabled entry. Published content requires a heading, description and details; prices have at most two decimals.
+- `/api/events/register` saves an attendee with an Idempotency-Key and current `eventVersion`. Free registrations confirm immediately; paid ones require captured payment. Registration status and payment endpoints require its private token. `/api/admin/event/registrations` is admin-only.
+
+Event registrations preserve a snapshot of the event and price. Hiding or editing an event stops new orders for its earlier version; an already-issued order may still capture and is honored. Capacity limits, refunds, cancellations, cross-device event recovery, multi-staff identities and automatic data retention are not implemented.
+
+## Checks and backups
 
 ```sh
 npm test
 npm run lint
 npm run build
-# Configure .env.local for production; APP_URL must be the real HTTPS origin.
-# Set EDGE_HOST=0.0.0.0 and EDGE_PORT as needed behind your HTTPS proxy.
-# Keep API_PORT private. Set DATA_ENCRYPTION_KEY before production startup.
-npm start
 ```
 
-The production launcher runs a filtering gateway and a private Node API process; the private process serves `dist/` and `/api` through the gateway. Deploy to a **single persistent Node 24 instance with a persistent volume** for DATABASE_PATH, behind HTTPS. Do not deploy SQLite on ephemeral serverless storage. The existing `vercel.json` describes only the static frontend export and does not deploy this backend. Serve the API and website through the same public gateway origin. Never expose the private API port.
-
-Set ADMIN_PASSWORD to a unique password of at least 12 characters in production, and supply a 64-character hexadecimal DATA_ENCRYPTION_KEY through a secret manager. Back up SQLite and protect the volume, secrets and backups with host-level access controls/encryption. The schema creates automatically on first start. Multiple worker processes/replicas are not supported by this initial implementation; use a shared database and leased jobs before scaling. Audit entries cover booking creation, decisions and verified payment. No automatic refund, data-retention policy, multi-staff identities, production account provisioning, or deployment is included.
-
-## Tests
-
-The API tests use isolated temporary databases and mocked provider calls. They cover session/CSRF enforcement, authoritative pricing, overlaps, idempotency, approval/email gating, forged callbacks, payment amounts/capture, duplicate webhooks, unconfigured providers, OTP recovery, persistence after restart, and block safety. Adapter tests cover pagination, token refresh, fail-closed free/busy checks, deterministic event reuse and app-owned block deletion.
-
-## Optional events and community section
-
-The admin's Events & Community tab edits one featured gathering with heading, description, details, INR price and type. `GET/PUT /api/admin/event` stores its draft; `PATCH /api/admin/event/visibility` accepts `{enabled:true|false}`. Publishing requires saved nonempty heading/description/details. Price must be nonnegative, with at most two decimal places. Turning visibility off preserves content. `GET /api/events` exposes only the enabled entry, never a hidden draft. The homepage polls once per minute and on return to the tab. The public section includes Register & Pay (or Register for free). Registration and Razorpay verification are described below; group-event calendar creation is not automatic.
-
-### Event registration and payment
-
-`POST /api/events/register` accepts name, email, international phone and `eventVersion` (the published entry’s updatedAt), plus an Idempotency-Key header. Price and status come only from the server. The response includes a registration and its private access token. Free registrations confirm immediately; paid registrations stay awaiting_payment. Disabled events or stale event versions reject new registrations.
-
-`GET /api/events/registrations/:id`, `POST .../payment/order` and `POST .../payment/verify` require the registration's bearer access token. Razorpay callbacks use the same server-side signature, order, captured-status, amount and currency checks as appointments. Signed payment.captured webhooks support both types of order. Duplicate callbacks queue only one registration-confirmation email. `GET /api/admin/event/registrations` lists registrations for authenticated staff.
-
-Event snapshots preserve the registered heading, details and price if the admin edits the section later. Hiding/editing the event stops new checkout orders for its earlier version; an already-issued order can still capture and is honored. Event hiding does not issue refunds. Registration recovery in the UI uses the same browser session’s access token; cross-device event recovery, cancellations, capacity limits and refunds are not implemented. Do not switch a paid event to a new occasion until outstanding registrations are resolved.
-
-With no Razorpay credentials, attendee details can be saved but paid registrations remain unconfirmed. No live payments were made while implementing or testing this feature.
+Tests cover authentication, cross-site rejection, encrypted storage, authoritative pricing, interval conflicts, concurrent idempotency, single-use recovery, payment verification, provider adapters and leased jobs. For a persistent Node installation, `npm start` runs the filtering gateway and private API. `npm run backup` snapshots **local SQLite only**; use the managed Postgres provider's backup and restore facilities for Vercel. Protect and retain the encryption key separately, and test restores before relying on real data.

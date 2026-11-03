@@ -1,0 +1,12 @@
+.git
+node_modules
+data
+outputs
+*.sqlite*
+*.key
+*.pem
+.env*
+!.env.example
+server/*.test.ts
+src/**/*.test.ts
+dist-server
