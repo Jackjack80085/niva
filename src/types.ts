@@ -122,6 +122,7 @@ export interface Appointment {
   durationMin: number;
   status: AppointmentStatus;
   paymentStatus?: 'not_required' | 'pending' | 'paid';
+  calendarStatus?: 'waiting_payment' | 'queued' | 'synced' | 'conflict';
   fee: number;
   meetingUrl?: string;
   notes?: string;
@@ -166,3 +167,26 @@ export type AdminTab =
   | 'website'
   | 'notifications'
   | 'settings';
+
+export interface PracticeEvent {
+  heading: string;
+  description: string;
+  details: string;
+  price: number;
+  kind: 'event' | 'community';
+  enabled: boolean;
+  updatedAt: string | null;
+}
+
+export interface EventRegistration {
+  id: string;
+  referenceNo: string;
+  name: string;
+  email: string;
+  phone: string;
+  event: PracticeEvent;
+  price: number;
+  status: 'awaiting_payment' | 'registered';
+  paymentStatus: 'pending' | 'paid' | 'not_required';
+  createdAt: string;
+}

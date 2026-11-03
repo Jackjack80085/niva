@@ -1,9 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {CalendarDays, ChevronLeft, ChevronRight, ChevronDown} from 'lucide-react';
-export function BookingCalendar({value, onChange, available}: {value:string; onChange:(value:string)=>void; available:(value:string)=>boolean}) {
+export function BookingCalendar({value, onChange, available, onMonthChange}: {value:string; onChange:(value:string)=>void; available:(value:string)=>boolean; onMonthChange?:(month:string)=>void}) {
  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  const [month,setMonth]=useState(()=>new Date((value||today)+'T12:00:00'));
  const [open,setOpen]=useState(false); const root=useRef<HTMLDivElement>(null);const trigger=useRef<HTMLButtonElement>(null);
+ useEffect(()=>{onMonthChange?.(`${month.getFullYear()}-${String(month.getMonth()+1).padStart(2,'0')}`);},[month,onMonthChange]);
  const first=new Date(month.getFullYear(),month.getMonth(),1);const count=new Date(month.getFullYear(),month.getMonth()+1,0).getDate();const offset=(first.getDay()+6)%7;
  const key=(day:number)=>`${month.getFullYear()}-${String(month.getMonth()+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
  const prevAllowed=first.getFullYear()>Number(today.slice(0,4)) || (first.getFullYear()===Number(today.slice(0,4))&&first.getMonth()>Number(today.slice(5,7))-1);

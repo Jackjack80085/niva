@@ -1,3 +1,4 @@
+import {api, savedAccess, rememberAccess, loadBooking} from '../utils/api';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Appointment, BlockedSlot, DayAvailability, AppView, AdminTab, AppointmentStatus, ServiceType, ClinicalConsultationNote, DigitalPrescription, PatientType } from '../types';
 import { 
@@ -21,6 +22,10 @@ export interface Associate { id: string; name: string; email: string; pin: strin
 export interface PracticeTask { id: string; title: string; assigneeId: string; done: boolean }
 function readSaved<T>(key: string, fallback: T): T { try { return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback; } catch { return fallback; } }
 interface AppContextType {
+  refreshPatientBooking: (id: string) => Promise<Appointment>;
+  patientBookingId: string | null;
+  selectPatientBooking: (id: string) => void;
+  clearPatientBooking: () => void;
   staffId: string;
   associates: Associate[];
   saveAssociates: (items: Associate[]) => void;
@@ -50,7 +55,7 @@ interface AppContextType {
   // Authentication
   isAdminAuthenticated: boolean;
   adminPasscode: string;
-  verifyAdminPasscode: (code: string) => boolean;
+  verifyAdminPasscode: (code: string) => Promise<boolean>;
   logoutAdmin: () => void;
 
   // Clinical Notes & Prescriptions
@@ -77,7 +82,7 @@ interface AppContextType {
   removeToast: (id: string) => void;
   
   // Core Domain Operations
-  bookAppointment: (payload: Omit<Appointment, 'id' | 'referenceNo' | 'createdAt' | 'status'>) => Appointment;
+  bookAppointment: (payload: Omit<Appointment, 'id' | 'referenceNo' | 'createdAt' | 'status'>) => Promise<Appointment>;
   rescheduleAppointment: (appointmentId: string, newDate: string, newTime: string) => void;
   updateAppointmentStatus: (appointmentId: string, newStatus: AppointmentStatus) => void;
   blockSlot: (date: string, time: string, clinicId?: string, reason?: string) => void;
@@ -95,7 +100,9 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [appointments, setAppointments] = useState<Appointment[]>(() => readSaved('niva_appointments', INITIAL_APPOINTMENTS.map(a => ({...a, clinicId: 'online'}))));
+  const [patientBookingId, setPatientBookingId] = useState<string | null>(() => Object.keys(savedAccess()).at(-1) || null);
+  const clearPatientBooking = () => setPatientBookingId(null);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>(() => readSaved('niva_blocks', INITIAL_BLOCKED_SLOTS));
   const [weeklyAvailability, setWeeklyAvailability] = useState<DayAvailability[]>(() => readSaved('niva_hours', INITIAL_WEEKLY_AVAILABILITY));
   
@@ -104,71 +111,58 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [tasks, saveTasks] = useState<PracticeTask[]>(() => readSaved('niva_tasks', []));
   const [timeOff, saveTimeOff] = useState<{id: string; start: string; end: string; reason: string}[]>(() => readSaved('niva_leave', []));
   const can = (permission: Permission) => isAdminAuthenticated && (staffId === 'doctor' || associates.some(a => a.id === staffId && a.enabled && a.permissions.includes(permission)));
-  useEffect(() => { for (const [key, value] of Object.entries({niva_appointments: appointments, niva_blocks: blockedSlots, niva_hours: weeklyAvailability, niva_associates: associates, niva_tasks: tasks, niva_leave: timeOff})) localStorage.setItem(key, JSON.stringify(value)); }, [appointments, blockedSlots, weeklyAvailability, associates, tasks, timeOff]);
+  useEffect(() => { for (const [key, value] of Object.entries({niva_blocks: blockedSlots, niva_hours: weeklyAvailability, niva_associates: associates, niva_tasks: tasks, niva_leave: timeOff})) localStorage.setItem(key, JSON.stringify(value)); }, [blockedSlots, weeklyAvailability, associates, tasks, timeOff]);
   const setMeetingUrl = (id: string, url: string) => { if (!can('appointments')) return; setAppointments(prev => prev.map(a => a.id === id ? {...a, meetingUrl: url} : a)); };
-  // Clinical Notes & Prescriptions State
-  const [consultationNotes, setConsultationNotes] = useState<ClinicalConsultationNote[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dr_niva_consultation_notes');
-      if (saved) {
-        try { return JSON.parse(saved); } catch (e) { /* fallback */ }
-      }
-    }
-    return INITIAL_CONSULTATION_NOTES;
-  });
-
-  const [digitalPrescriptions, setDigitalPrescriptions] = useState<DigitalPrescription[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dr_niva_digital_prescriptions');
-      if (saved) {
-        try { return JSON.parse(saved); } catch (e) { /* fallback */ }
-      }
-    }
-    return INITIAL_DIGITAL_PRESCRIPTIONS;
-  });
-
-  // Save notes and prescriptions to localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('dr_niva_consultation_notes', JSON.stringify(consultationNotes));
-    }
-  }, [consultationNotes]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('dr_niva_digital_prescriptions', JSON.stringify(digitalPrescriptions));
-    }
-  }, [digitalPrescriptions]);
+  // Clinical records are not part of this dashboard. Do not copy legacy patient records
+  // into browser storage or hydrate them into the public application.
+  const [consultationNotes, setConsultationNotes] = useState<ClinicalConsultationNote[]>([]);
+  const [digitalPrescriptions, setDigitalPrescriptions] = useState<DigitalPrescription[]>([]);
 
   // Passcode verification state
-  const adminPasscode = '2026';
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('dr_niva_admin_auth') === 'true';
-    }
-    return false;
-  });
-
-  const verifyAdminPasscode = (code: string): boolean => {
-    const associate = associates.find(a => a.enabled && a.pin === code.trim());
-    if (code.trim() === adminPasscode || associate) {
-      const id = code.trim() === adminPasscode ? 'doctor' : associate!.id;
-      setStaffId(id); sessionStorage.setItem('niva_staff', id);
-      setIsAdminAuthenticated(true);
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('dr_niva_admin_auth', 'true');
-      }
-      return true;
-    }
-    return false;
+  const adminPasscode = '';
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const refreshPatientBooking = async (id:string) => {
+    const appointment=await loadBooking(id);
+    setAppointments(prev=>[appointment,...prev.filter(a=>a.id!==id)]);
+    return appointment;
   };
-
+  useEffect(() => {
+    let active=true;
+    api<{authenticated:boolean}>('/admin/session').then(() => {
+      if(!active)return;
+      setIsAdminAuthenticated(true);setStaffId('doctor');
+      sessionStorage.setItem('dr_niva_admin_auth','true');
+      if(['#admin','#admin-portal'].includes(window.location.hash))setActiveViewState('admin');
+    }).catch(()=>{sessionStorage.removeItem('dr_niva_admin_auth');});
+    // An emailed access link carries its credential in the fragment, never in request logs.
+    const fragment=window.location.hash;
+    const params=new URLSearchParams(fragment.split('?')[1]||'');
+    const id=params.get('appointment'),token=params.get('token');
+    if(id&&token){rememberAccess(id,token);setPatientBookingId(id);window.history.replaceState(null,'',window.location.pathname+window.location.search+'#booking');setActiveViewState('patient-booking');}
+    const bookingId=id||Object.keys(savedAccess()).at(-1);
+    if(bookingId)void refreshPatientBooking(bookingId).catch(()=>{});
+    return()=>{active=false;};
+  },[]);
+  useEffect(()=>{
+    if(!isAdminAuthenticated)return;
+    let active=true;
+    const refresh=()=>api<{appointments:Appointment[]}>('/admin/appointments').then(data=>{if(active)setAppointments(data.appointments);}).catch(error=>{if(active)addToast({title:'Dashboard unavailable',message:error.message,type:'alert'});});
+    void refresh(); const timer=window.setInterval(refresh,15_000);
+    return()=>{active=false;window.clearInterval(timer);};
+  },[isAdminAuthenticated]);
+  useEffect(()=>{
+    if(!patientBookingId||isAdminAuthenticated)return;
+    const refresh=()=>void refreshPatientBooking(patientBookingId).catch(()=>{});
+    refresh();const timer=window.setInterval(refresh,15_000);
+    return()=>window.clearInterval(timer);
+  },[patientBookingId,isAdminAuthenticated]);
+  const verifyAdminPasscode = async (code:string):Promise<boolean> => {
+    try {await api('/admin/login',{method:'POST',body:JSON.stringify({password:code})});setStaffId('doctor');setIsAdminAuthenticated(true);sessionStorage.setItem('dr_niva_admin_auth','true');setActiveViewState('admin');window.location.hash='admin';return true;} catch {return false;}
+  };
   const logoutAdmin = () => {
-    setIsAdminAuthenticated(false);
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem('dr_niva_admin_auth');
-    }
-    setActiveView('admin-login');
+    void api('/admin/logout',{method:'POST'}).then(()=>{
+      setIsAdminAuthenticated(false);setAppointments([]);sessionStorage.removeItem('dr_niva_admin_auth');setActiveView('admin-login');
+    }).catch(error=>addToast({title:'Unable to sign out',message:error.message,type:'alert'}));
   };
 
   // Patient Detail Modal state
@@ -338,51 +332,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return !appointments.some(a => a.id !== excludeId && a.date === date && !['cancelled', 'rejected'].includes(a.status) && minutes(time) < minutes(a.time) + a.durationMin && minutes(time) + duration > minutes(a.time));
   };
 
-  const bookAppointment = (payload: Omit<Appointment, 'id' | 'referenceNo' | 'createdAt' | 'status'>): Appointment => {
-    if (!isSlotAvailable(payload.date, payload.time, 'online', payload.durationMin)) throw new Error('This time is no longer available. Choose another slot.');
-    const nextRefNum = 1042 + appointments.length;
-    const newAppointment: Appointment = {
-      ...payload,
-      id: 'apt-' + Math.random().toString(36).substring(2, 9),
-      referenceNo: `APT-${nextRefNum}`,
-      status: 'pending',
-      paymentStatus: 'pending',
-      createdAt: new Date().toISOString(),
-      history: [
-        {
-          date: 'Today',
-          type: 'Online Self-Booking',
-          summary: `Booked ${payload.serviceId} consultation for ${payload.time}.`,
-        },
-      ],
-    };
-
-    setAppointments((prev) => [newAppointment, ...prev]);
-    void syncToGoogleSheet({
-      id: newAppointment.id,
-      referenceNo: newAppointment.referenceNo,
-      patientName: newAppointment.patientName,
-      patientEmail: newAppointment.patientEmail,
-      patientPhone: newAppointment.patientPhone,
-      serviceId: newAppointment.serviceId,
-      consultingFor: newAppointment.consultingFor || newAppointment.serviceId,
-      date: newAppointment.date,
-      time: newAppointment.time,
-      durationMin: newAppointment.durationMin,
-      fee: newAppointment.fee,
-      status: 'pending',
-      paymentStatus: 'pending',
-      createdAt: newAppointment.createdAt,
-      reason: newAppointment.reason || '',
-    });
-
-    addToast({
-      title: 'Request received',
-      message: `Pending approval for ${payload.patientName} at ${payload.time} on ${payload.date}.`,
-      type: 'success',
-    });
-
-    return newAppointment;
+  const bookAppointment = async (payload: Omit<Appointment, 'id' | 'referenceNo' | 'createdAt' | 'status'>): Promise<Appointment> => {
+    const data=await api<{appointment:Appointment;accessToken:string}>('/appointments',{method:'POST',headers:{'Idempotency-Key':crypto.randomUUID()},body:JSON.stringify(payload)});
+    rememberAccess(data.appointment.id,data.accessToken);
+    setAppointments(prev=>[data.appointment,...prev.filter(a=>a.id!==data.appointment.id)]);
+    setPatientBookingId(data.appointment.id);
+    return data.appointment;
   };
 
   const rescheduleAppointment = (appointmentId: string, newDate: string, newTime: string) => {
@@ -422,41 +377,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const updateAppointmentStatus = (appointmentId: string, newStatus: AppointmentStatus) => {
-    if (!can('appointments')) return;
-    setAppointments((prev) =>
-      prev.map((apt) => {
-        if (apt.id === appointmentId) {
-          const updated: Appointment = {
-            ...apt,
-            status: newStatus,
-            paymentStatus: newStatus === 'confirmed' || newStatus === 'upcoming' || newStatus === 'completed' ? 'pending' : apt.paymentStatus,
-            history: [...(apt.history || []), {date: new Date().toISOString(), type: `Status: ${newStatus}`, summary: `Updated by ${staffId === "doctor" ? "doctor" : "associate"}.`}],
-          };
-          if (selectedAppointment?.id === appointmentId) {
-            setSelectedAppointment(updated);
-          }
-          return updated;
-        }
-        return apt;
-      })
-    );
-
-    const labels: Record<AppointmentStatus, string> = {
-      pending: 'Awaiting approval',
-      rejected: 'Request declined',
-      completed: 'Consultation marked as Completed',
-      cancelled: 'Appointment Cancelled',
-      confirmed: 'Appointment Confirmed',
-      upcoming: 'Set to Upcoming',
-      blocked: 'Slot Blocked',
-    };
-
-    addToast({
-      title: 'Status Updated',
-      message: labels[newStatus] || 'Updated appointment status.',
-      type: 'info',
-    });
+  const updateAppointmentStatus = (appointmentId:string,newStatus:AppointmentStatus) => {
+    if(!can('appointments'))return;
+    if(!['confirmed','rejected'].includes(newStatus)){addToast({title:'Unsupported action',message:'Only approval and decline are available here.',type:'alert'});return;}
+    void api<{appointment:Appointment}>(`/admin/appointments/${appointmentId}/decision`,{method:'POST',body:JSON.stringify({decision:newStatus==='confirmed'?'approve':'decline'})}).then(data=>{
+      setAppointments(prev=>prev.map(a=>a.id===appointmentId?data.appointment:a));
+      addToast({title:'Request reviewed',message:newStatus==='confirmed'?'Approval saved. The approval email is queued.':'Request declined.',type:'success'});
+    }).catch(error=>addToast({title:'Unable to review request',message:error.message,type:'alert'}));
   };
 
   const blockSlot = (date: string, time: string, clinicId: string = 'hsr', reason: string = 'Clinical consultation block') => {
@@ -572,6 +499,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider
       value={{
+        refreshPatientBooking, patientBookingId, selectPatientBooking: setPatientBookingId, clearPatientBooking,
         staffId, associates, saveAssociates, tasks, saveTasks, can, setMeetingUrl, timeOff, saveTimeOff,
         appointments,
         blockedSlots,

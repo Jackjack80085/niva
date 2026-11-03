@@ -92,7 +92,7 @@ export const PatientFooter: React.FC = () => {
             <ul className="space-y-2">
               <li>
                 <a 
-                  href="https://instagram.com" 
+                  href="https://www.instagram.com/thecurlyshrink?utm_source=ig_web_button_share_sheet&amp;mdxt=ZDNlZDc0MzIxNw=="
                   target="_blank" 
                   rel="noreferrer"
                   className="hover:text-[#FAF7F0] inline-flex items-center gap-1 transition-colors"
@@ -103,7 +103,7 @@ export const PatientFooter: React.FC = () => {
               </li>
               <li>
                 <a 
-                  href="https://youtube.com" 
+                  href="https://youtube.com/@thecurlyshrink?si=FaFOOMiMarQnIrOu"
                   target="_blank" 
                   rel="noreferrer"
                   className="hover:text-[#FAF7F0] inline-flex items-center gap-1 transition-colors"

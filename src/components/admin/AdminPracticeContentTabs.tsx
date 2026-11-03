@@ -196,7 +196,7 @@ export const AdminPracticeContentTabs: React.FC<Props> = ({ tab }) => {
             <span className="font-editorial italic text-2xl">@thecurlyshrink</span>
             <div className="flex items-center gap-2">
               <a 
-                href="https://instagram.com" 
+                href="https://www.instagram.com/thecurlyshrink?utm_source=ig_web_button_share_sheet&amp;mdxt=ZDNlZDc0MzIxNw=="
                 target="_blank" 
                 rel="noreferrer"
                 className="px-3 py-1 rounded-full bg-white/80 hover:bg-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
@@ -205,7 +205,7 @@ export const AdminPracticeContentTabs: React.FC<Props> = ({ tab }) => {
                 <span>Instagram ↗</span>
               </a>
               <a 
-                href="https://youtube.com" 
+                href="https://youtube.com/@thecurlyshrink?si=FaFOOMiMarQnIrOu"
                 target="_blank" 
                 rel="noreferrer"
                 className="px-3 py-1 rounded-full bg-white/80 hover:bg-white text-xs font-semibold flex items-center gap-1.5 transition-colors"

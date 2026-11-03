@@ -12,6 +12,8 @@ export default defineConfig(() => {
       },
     },
     server: {
+      strictPort: true,
+      fs: { strict: true, allow: [process.cwd()], deny: ['**/.env', '**/.env.*', '**/*.{key,pem,crt,sqlite,sqlite-wal,sqlite-shm}', path.resolve(process.cwd(), 'data') + '/**', '**/server/**', '**/scripts/**', '**/.git/**'] },
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modify—file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
