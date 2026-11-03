@@ -7,7 +7,6 @@ import { ExpertiseSection } from './ExpertiseSection';
 import { ConsultationsSection } from './ConsultationsSection';
 import { TheCurlyShrinkSection } from './TheCurlyShrinkSection';
 import { CredibilityNumbersSection } from './CredibilityNumbersSection';
-import { DoctorStory } from './DoctorStory'; // Professional Background
 import { FAQSection } from './FAQSection';
 import { FinalBookingCta } from './FinalBookingCta';
 import { PatientFooter } from './PatientFooter';
@@ -29,7 +28,6 @@ export const PatientHome: React.FC = () => {
         <ConsultationsSection />
         <TheCurlyShrinkSection />
         <CredibilityNumbersSection />
-        <DoctorStory />
 
         <FAQSection />
         <FinalBookingCta />
