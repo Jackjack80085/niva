@@ -1,6 +1,6 @@
 .git
 node_modules
-data
+/data
 outputs
 *.sqlite*
 *.key
