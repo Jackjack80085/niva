@@ -645,3 +645,8 @@
   .booking-grid aside > .consultation-guide[data-expanded=true] { display: block; margin-top: 12px; }
   .consultation-guide-steps p, .consultation-guide-intro { font-size: 13px; }
 }
+@media (max-width: 639px) {
+  .practice-sidebar nav { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; overflow: visible; }
+  .practice-sidebar nav button { flex-direction: column; justify-content: center; gap: 6px; padding: 10px 4px; white-space: normal; text-align: center; font-size: 12px; line-height: 1.4; }
+  .practice-sidebar nav small { margin-left: 0; }
+}
