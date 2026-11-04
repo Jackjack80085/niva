@@ -265,7 +265,6 @@ export async function createApp(
   );
   app.post(
     "/api/admin/logout",
-    admin,
     asyncRoute(async (req, res) => {
       const token =
         req.headers.cookie

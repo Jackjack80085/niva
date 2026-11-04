@@ -1012,3 +1012,16 @@ test("simultaneous event registration retries preserve one registration and its 
     await f.close();
   }
 });
+
+
+test('empty JSON logout requests revoke sessions and repeated logout clears expired cookies',async()=>{
+  const f=await fixture();try{
+    await f.login();
+    const result=await f.request('/admin/logout','POST');
+    assert.equal(result.status,200);
+    assert.match(result.response.headers.get('set-cookie')||'',/niva_session=;/);
+    assert.equal((await f.request('/admin/session')).status,401);
+    assert.equal((await f.request('/admin/logout','POST')).status,200);
+    assert.equal((await f.request('/admin/logout','POST',undefined,{Origin:'https://untrusted.example'})).status,403);
+  }finally{await f.close();}
+});

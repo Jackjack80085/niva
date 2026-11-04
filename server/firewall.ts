@@ -24,7 +24,7 @@ export const apiFirewall=(gatewaySecret?:string,production=false):RequestHandler
   const length=Number(req.get('content-length')||0);
   if(length>128*1024)return res.status(413).json({error:'Request body is too large.'});
   if(req.get('content-encoding')&&req.get('content-encoding')!=='identity')return res.status(415).json({error:'Compressed API requests are not accepted.'});
-  if(['POST','PUT','PATCH'].includes(req.method)&&!req.is('application/json'))return res.status(415).json({error:'Use application/json for API requests.'});
+  if(['POST','PUT','PATCH'].includes(req.method)&&!/^application\/json(?:\s*;|\s*$)/i.test(req.get('content-type')||''))return res.status(415).json({error:'Use application/json for API requests.'});
   next();
 };
 export type EdgeConfig={production:boolean;appUrl:string;backendPort:number;vitePort?:number;secret:string;requestLimit?:number;windowMs?:number};
