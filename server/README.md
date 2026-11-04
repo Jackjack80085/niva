@@ -14,7 +14,7 @@ The public gateway listens on localhost:3000 and forwards to the private API on 
 
 ## Vercel deployment
 
-The existing Vercel project builds the frontend into `dist/`. `api/index.ts` exports `server/vercel.ts` as a Function without opening a listening port or writing a temporary database. The API rewrite precedes the SPA fallback, so `/api/admin/login` reaches Express instead of `index.html`. Node 24 runs in `sin1`, with a 120-second invocation limit.
+The existing Vercel project builds the frontend into `dist/`. `api/index.js` exports `server/vercel.ts` as a Function without opening a listening port or writing a temporary database. The API rewrite precedes the SPA fallback, so `/api/admin/login` reaches Express instead of `index.html`. Node 24 runs in `sin1`, with a 120-second invocation limit.
 
 Set these server-only variables for **Production**, then deploy:
 
