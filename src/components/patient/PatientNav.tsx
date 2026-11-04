@@ -36,11 +36,11 @@ export const PatientNav: React.FC = () => {
   };
 
   return (
-    <header className="fixed top-0 inset-x-0 z-40 flex justify-center pointer-events-none transition-all duration-400">
+    <header className="patient-navigation fixed top-0 inset-x-0 z-40 flex justify-center pointer-events-none transition-all duration-400">
       <div
         className={`w-full transition-all duration-400 ease-out pointer-events-auto ${
           scrolled
-            ? 'max-w-6xl mt-3 mx-3 sm:mx-6 px-4 sm:px-6 py-3 rounded-full bg-[#FAF7F0]/92 backdrop-blur-md border border-[#332B27]/12 shadow-sm'
+            ? `max-w-6xl mt-3 mx-3 sm:mx-6 px-4 sm:px-6 py-3 ${mobileMenuOpen ? "rounded-3xl" : "rounded-full"} bg-[#FAF7F0]/92 backdrop-blur-md border border-[#332B27]/12 shadow-sm`
             : 'max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 bg-transparent'
         }`}
       >

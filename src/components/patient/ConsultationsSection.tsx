@@ -115,7 +115,7 @@ export const ConsultationsSection: React.FC = () => {
         >
           <div 
             onClick={() => openBooking({ serviceId: 'consultation' })}
-            className="group cursor-pointer rounded-3xl bg-[#27201D] border border-[#FAF7F0]/15 shadow-xl hover:border-[#F1E3A6]/60 transition-all duration-300 p-8 sm:p-14 relative overflow-hidden"
+            className="group cursor-pointer rounded-3xl bg-[#27201D] border border-[#FAF7F0]/15 shadow-xl hover:border-[#F1E3A6]/60 transition-all duration-300 p-6 sm:p-14 relative overflow-hidden"
           >
             {/* Top highlight bar */}
             <div className="absolute top-0 inset-x-0 h-1 bg-[#F1E3A6] opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -144,7 +144,7 @@ export const ConsultationsSection: React.FC = () => {
               A first step towards understanding what you're going through. Diagnostic evaluation, symptom triage, and care direction.
             </p>
 
-            <div className="flex items-center justify-between pt-6 border-t border-[#FAF7F0]/10 text-xs">
+            <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between pt-6 border-t border-[#FAF7F0]/10 text-xs">
               <span className="text-[#FAF7F0]/60 font-sans-clean flex items-center gap-2">
                 <Video className="w-4 h-4 text-[#F1E3A6]" />
                 <span>100% Online HD Teletherapy Suite</span>
@@ -168,7 +168,7 @@ export const ConsultationsSection: React.FC = () => {
 
         {/* 2. THERAPY OPTIONS UNDERNEATH AS SOPHISTICATED ROWS (NOT 6 BOXED CARDS) */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[#FAF7F0]/15">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#FAF7F0]/15">
             <h3 className="font-sans-clean text-xs font-bold tracking-widest uppercase text-[#F1E3A6]">
               THERAPY MODALITIES
             </h3>
@@ -188,8 +188,8 @@ export const ConsultationsSection: React.FC = () => {
                   className="py-6 sm:py-7 group cursor-pointer transition-colors duration-200"
                 >
                   {/* Row Header */}
-                  <div className="flex items-baseline justify-between gap-4">
-                    <div className="flex items-baseline gap-4 sm:gap-6 flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 sm:gap-4">
+                    <div className="flex items-baseline gap-4 sm:gap-6 flex-1 min-w-0">
                       <span className="font-mono-tabular text-xs sm:text-sm font-semibold text-[#F1E3A6]/60">
                         {item.num}
                       </span>
@@ -198,18 +198,18 @@ export const ConsultationsSection: React.FC = () => {
                       </h4>
                     </div>
 
-                    <div className="flex items-center gap-6 shrink-0 font-mono-tabular">
-                      <span className="text-xs text-[#FAF7F0]/50 hidden sm:inline">
+                    <div className="flex items-center justify-between sm:justify-end gap-4 pl-8 sm:pl-0 shrink-0 font-mono-tabular">
+                      <span className="text-xs text-[#FAF7F0]/50">
                         {item.duration}
                       </span>
                       <span className="text-xl sm:text-2xl font-semibold text-[#FAF7F0]">
                         {item.fee}
                       </span>
-                      <div className={`w-8 h-8 rounded-full border border-[#FAF7F0]/20 flex items-center justify-center transition-all duration-300 ${
+                      <button type="button" aria-label={`Details for ${item.title}`} aria-expanded={isOpen} onClick={e=>{e.stopPropagation();setActiveRow(isOpen?null:idx);}} className={`w-11 h-11 sm:w-8 sm:h-8 shrink-0 rounded-full border border-[#FAF7F0]/20 flex items-center justify-center transition-all duration-300 ${
                         isOpen ? 'rotate-45 border-[#F1E3A6] text-[#F1E3A6]' : 'text-[#FAF7F0]/50'
                       }`}>
                         <ArrowUpRight className="w-4 h-4" />
-                      </div>
+                      </button>
                     </div>
                   </div>
 
