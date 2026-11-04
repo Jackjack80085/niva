@@ -15,6 +15,7 @@ import {ArrowLeft, Video, CheckCircle2, Clock3} from 'lucide-react';
 export const BookingWorkspace = () => {
  const {setActiveView, bookingInitialPreselection, bookAppointment, isSlotAvailable, appointments, patientBookingId, clearPatientBooking, selectPatientBooking, refreshPatientBooking} = useApp();
  const [checkingStatus, setCheckingStatus] = useState(false);
+ const [guideExpanded,setGuideExpanded]=useState(false);
  const [serviceId,setServiceId] = useState(bookingInitialPreselection?.serviceId || SERVICES[0].id);
  const service = SERVICES.find(s => s.id === serviceId) || SERVICES[0];
  const [date,setDate] = useState(''); const [time,setTime] = useState(''); const [error,setError] = useState('');
@@ -43,7 +44,7 @@ export const BookingWorkspace = () => {
    setCheckingStatus(false); clearPatientBooking(); setResult(null); setDate(''); setTime(''); setError('');
  };
 
- return <div className="booking-page"><header><button onClick={()=>setActiveView('patient-home')}><ArrowLeft size={16}/> Back to website</button><span>DR. NIVA JACOB</span></header><main className="booking-grid"><aside><p className="eyebrow">CARE, WHERE YOU ARE</p><h1>A little time.<br/>A meaningful step.</h1><p>Online psychiatric care and therapy, from a space where you feel comfortable.</p><section className="practice-card consultation-guide" aria-labelledby="consultation-guide-title">
+ return <div className="booking-page"><header><button onClick={()=>setActiveView('patient-home')}><ArrowLeft size={16}/> Back to website</button><span>DR. NIVA JACOB</span></header><main className="booking-grid"><aside><p className="eyebrow">CARE, WHERE YOU ARE</p><h1>A little time.<br/>A meaningful step.</h1><p>Online psychiatric care and therapy, from a space where you feel comfortable.</p><button type="button" className="consultation-guide-toggle" aria-expanded={guideExpanded} aria-controls="consultation-guide" onClick={()=>setGuideExpanded(!guideExpanded)}>How booking works <span aria-hidden="true">{guideExpanded ? "−" : "+"}</span></button><section id="consultation-guide" data-expanded={guideExpanded} className="practice-card consultation-guide" aria-labelledby="consultation-guide-title">
  <div className="consultation-guide-heading"><span className="consultation-guide-icon"><Video size={22} aria-hidden="true"/></span><div><p className="eyebrow">THE ONLINE EXPERIENCE</p><h3 id="consultation-guide-title">Care, without the commute.</h3></div></div>
  <p className="consultation-guide-intro">Thoughtful care, wherever you feel at ease.</p>
  <ol className="consultation-guide-steps">

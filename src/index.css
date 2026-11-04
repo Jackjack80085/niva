@@ -638,3 +638,10 @@
   .integration-badges > span, .integration-status summary { font-size: 12px; }
   .integration-status summary { padding-block: 12px; }
 }
+.booking-page button.consultation-guide-toggle { display: none; }
+@media (max-width: 700px) {
+  .booking-page button.consultation-guide-toggle { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 20px; background: transparent; border: 1px solid #ded3be; padding: 12px 16px; font-size: 14px; }
+  .booking-grid aside > .consultation-guide[data-expanded=false] { display: none; }
+  .booking-grid aside > .consultation-guide[data-expanded=true] { display: block; margin-top: 12px; }
+  .consultation-guide-steps p, .consultation-guide-intro { font-size: 13px; }
+}
