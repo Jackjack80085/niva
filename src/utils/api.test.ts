@@ -19,3 +19,13 @@ test('frontend rejects invalid JSON and error payloads even on HTTP 200',async c
   mock.mock.mockImplementation(async()=>new Response(JSON.stringify({authenticated:true}),{headers:{'Content-Type':'application/json'}}));
   assert.equal((await api<{authenticated:boolean}>('/admin/login')).authenticated,true);
 });
+
+test('bodyless JSON mutations send an empty object so logout passes the API firewall',async context=>{
+  context.mock.method(globalThis,'fetch',async(_url,options)=>{
+    assert.equal(options?.method,'POST');
+    assert.equal(options?.body,'{}');
+    assert.equal(new Headers(options?.headers).get('Content-Type'),'application/json');
+    return new Response(JSON.stringify({ok:true}),{headers:{'Content-Type':'application/json'}});
+  });
+  assert.deepEqual(await api('/admin/logout',{method:'POST'}),{ok:true});
+});

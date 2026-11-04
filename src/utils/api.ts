@@ -1,6 +1,10 @@
 import type { Appointment } from '../types';
 export async function api<T>(path:string,options:RequestInit={}):Promise<T> {
-  const response=await fetch('/api'+path,{credentials:'same-origin',...options,headers:{'Content-Type':'application/json',...options.headers}});
+  const headers=new Headers(options.headers);
+  if(!headers.has('Content-Type'))headers.set('Content-Type','application/json');
+  // Empty JSON mutations still need a body so the API can recognize the media type.
+  const body=options.body??(['POST','PUT','PATCH'].includes((options.method||'GET').toUpperCase())?'{}':undefined);
+  const response=await fetch('/api'+path,{credentials:'same-origin',...options,headers,body});
   if(!response.headers.get('content-type')?.toLowerCase().includes('application/json')) {
     throw new Error('The booking backend is not available on this website. This deployment is serving the frontend only.');
   }
