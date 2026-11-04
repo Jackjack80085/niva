@@ -21,7 +21,7 @@ Set these server-only variables for **Production**, then deploy:
 | Variable | Requirement |
 | --- | --- |
 | DATABASE_URL or POSTGRES_URL | Shared Postgres connection string, preferably the provider's pooled endpoint. Remote connections require verified TLS. |
-| ADMIN_PASSWORD | Unique password of at least 12 characters. |
+| ADMIN_PASSWORD | Unique password of at least 10 characters. |
 | DATA_ENCRYPTION_KEY | 32 random bytes encoded as 64 hex characters. Preserve separately from the database. |
 | APP_URL | Exact public HTTPS origin, such as `https://niva-wheat.vercel.app`. |
 | CRON_SECRET | Random secret used to authenticate Vercel's scheduled job request. |

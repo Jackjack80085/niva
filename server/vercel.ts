@@ -11,7 +11,7 @@ type System = Awaited<ReturnType<typeof createApp>>;
 export function vercelConfig(env: Environment): Config {
   const database = env.DATABASE_URL || env.POSTGRES_URL;
   if (!database || !/^postgres(?:ql)?:\/\//.test(database)) throw new Error('DATABASE_URL is required.');
-  if (!env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 12) throw new Error('ADMIN_PASSWORD must have at least 12 characters.');
+  if (!env.ADMIN_PASSWORD || env.ADMIN_PASSWORD.length < 10) throw new Error('ADMIN_PASSWORD must have at least 10 characters.');
   if (!/^[a-f0-9]{64}$/i.test(env.DATA_ENCRYPTION_KEY || '')) throw new Error('DATA_ENCRYPTION_KEY is required.');
   const appUrl = env.VERCEL_ENV === 'preview' && env.VERCEL_URL ? `https://${env.VERCEL_URL}` : env.APP_URL;
   if (!appUrl || new URL(appUrl).protocol !== 'https:') throw new Error('APP_URL must be an HTTPS origin.');

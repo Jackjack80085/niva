@@ -13,6 +13,7 @@ test('Vercel requires durable storage and strong server-only configuration, with
   assert.throws(() => vercelConfig({ ...value, DATABASE_URL: undefined }), /DATABASE_URL/);
   assert.throws(() => vercelConfig({ ...value, ADMIN_PASSWORD: '2026' }), /ADMIN_PASSWORD/);
   assert.throws(() => vercelConfig({ ...value, DATA_ENCRYPTION_KEY: '' }), /DATA_ENCRYPTION_KEY/);
+  assert.doesNotThrow(() => vercelConfig({ ...value, ADMIN_PASSWORD: 'Abc!234567' }));
   const config = vercelConfig(value);
   assert.equal(config.production, true);
   assert.equal(config.enablePayments, false); assert.equal(config.enableCalendar, false); assert.equal(config.enableEmail, false);

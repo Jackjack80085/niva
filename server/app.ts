@@ -71,9 +71,9 @@ export async function createApp(
 ) {
   requireValue(
     config.adminPassword &&
-      (!config.production || config.adminPassword.length >= 12),
+      (!config.production || config.adminPassword.length >= 10),
     500,
-    "Set ADMIN_PASSWORD to at least 12 characters in production.",
+    "Set ADMIN_PASSWORD to at least 10 characters in production.",
   );
   await store.ready;
   const app = express();
