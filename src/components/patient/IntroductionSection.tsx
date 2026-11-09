@@ -2,7 +2,8 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { editorialEase, standardViewport } from '../../utils/motionVariants';
 import { HandDrawnCurl, OrganicShape } from '../common/OrganicMotifs';
-import doctorCandidImg from '../../assets/images/candid_dr_niva_1790926664270.jpg';
+import doctorPortrait from '../../assets/images/dr-niva-about.webp';
+import doctorPortraitSmall from '../../assets/images/dr-niva-about-small.webp';
 
 export const IntroductionSection: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
@@ -43,9 +44,12 @@ export const IntroductionSection: React.FC = () => {
               transition={{ duration: shouldReduceMotion ? 0.01 : 1.1, ease: editorialEase }}
             >
               <motion.img
-                src={doctorCandidImg}
-                alt="Dr. Niva Jacob in clinical consultation studio"
-                className="w-full h-auto aspect-[4/5] object-cover object-center filter contrast-[1.02]"
+                src={doctorPortrait}
+                srcSet={`${doctorPortraitSmall} 480w, ${doctorPortrait} 960w`}
+                sizes="(max-width: 495px) calc(100vw - 48px), 448px"
+                alt="Dr. Niva Jacob in a white coat"
+                loading="lazy"
+                className="w-full h-auto aspect-[4/5] object-cover object-[center_85%]"
                 initial={{ scale: shouldReduceMotion ? 1 : 1.05 }}
                 whileInView={{ scale: 1 }}
                 viewport={standardViewport}
@@ -54,7 +58,7 @@ export const IntroductionSection: React.FC = () => {
 
               {/* Discreet editorial attribution caption */}
               <div className="absolute bottom-3 left-4 text-[10px] uppercase font-mono-tabular tracking-widest text-[#FAF7F0]/90 bg-[#332B27]/40 backdrop-blur-xs px-2.5 py-1 rounded-sm">
-                Studio Intake · Bangalore
+                Dr. Niva Jacob
               </div>
             </motion.div>
 
