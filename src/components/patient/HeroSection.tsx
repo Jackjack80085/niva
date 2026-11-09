@@ -24,17 +24,11 @@ export const HeroSection = () => {
 
       <div className="portrait-hero-inner mx-auto w-full max-w-6xl px-5 sm:px-8">
         <div className="portrait-hero-copy">
-          <div>
-            <p className="mb-4 flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.17em] text-[#F1E3A6] sm:mb-5">
-              <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
-              {DOCTOR_INFO.name}
-            </p>
-            <h1 id="hero-heading" className="portrait-hero-heading font-editorial font-medium tracking-tight">
-              <span className="block">You don’t have to</span>
-              <span className="block">figure it all out</span>
-              <span className="block text-[#F1E3A6]">alone.</span>
-            </h1>
-          </div>
+          <h1 id="hero-heading" className="portrait-hero-heading font-editorial font-medium tracking-tight">
+            <span className="block">You don’t have to</span>
+            <span className="block">figure it all out</span>
+            <span className="block text-[#F1E3A6]">alone.</span>
+          </h1>
 
           <div className="portrait-hero-actions">
             <p className="mb-2 text-xs font-semibold tracking-wide text-[#F1E3A6]">
@@ -62,15 +56,6 @@ export const HeroSection = () => {
             </div>
           </div>
         </div>
-
-        <ul className="portrait-hero-topics font-editorial" aria-label="Areas of care">
-          {['Mental health', 'Sexual health', 'Relationships'].map((topic) => (
-            <li key={topic} className="flex items-center gap-2">
-              <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-[#F1E3A6]" />
-              {topic}
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );
