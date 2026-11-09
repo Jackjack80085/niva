@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Menu, X, Lock, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { editorialEase } from '../../utils/motionVariants';
 
 export const PatientNav: React.FC = () => {
   const { openBooking, setActiveView } = useApp();
@@ -13,6 +12,7 @@ export const PatientNav: React.FC = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 80);
     };
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -35,6 +35,12 @@ export const PatientNav: React.FC = () => {
     }
   };
 
+  const navigationText = scrolled ? 'text-[#332B27]' : 'text-[#FAF7F0]';
+  const linkClass = `transition-colors cursor-pointer py-1 ${scrolled ? 'hover:text-[#332B27]' : 'hover:text-[#F1E3A6]'}`;
+  const bookingColor = scrolled
+    ? 'bg-[#332B27] text-[#FAF7F0] hover:bg-[#27201D]'
+    : 'bg-[#F1E3A6] text-[#332B27] hover:bg-[#FAF7F0]';
+
   return (
     <header className="patient-navigation fixed top-0 inset-x-0 z-40 flex justify-center pointer-events-none transition-all duration-400">
       <div
@@ -54,44 +60,44 @@ export const PatientNav: React.FC = () => {
             }}
             className="min-w-0 text-left group cursor-pointer"
           >
-            <span className={`font-editorial font-medium tracking-tight text-[#332B27] group-hover:text-[#B89552] transition-all duration-300 block ${
+            <span className={`font-editorial font-medium tracking-tight ${navigationText} group-hover:text-[#B89552] transition-all duration-300 block ${
               scrolled ? 'text-xl sm:text-2xl' : 'text-xl sm:text-3xl'
             }`}>
               Dr. NIVA JACOB
             </span>
             {!scrolled && (
-              <span className="block text-[9px] min-[375px]:text-[10px] sm:text-xs font-sans-clean font-medium text-[#332B27]/60 tracking-wide mt-0.5">
+              <span className="block text-[9px] min-[375px]:text-[10px] sm:text-xs font-sans-clean font-medium text-[#FAF7F0]/85 tracking-wide mt-0.5">
                 Psychiatrist • Sexologist • Therapist
               </span>
             )}
           </button>
 
           {/* Desktop Navigation Links - Extremely Minimal */}
-          <nav className="hidden xl:flex items-center gap-7 text-[13px] font-sans-clean font-medium text-[#332B27]/80">
+          <nav className={`hidden xl:flex items-center gap-7 text-[13px] font-sans-clean font-medium ${navigationText}`}>
             <button
               onClick={() => scrollToSection('consultations')}
-              className="hover:text-[#332B27] transition-colors cursor-pointer py-1"
+              className={linkClass}
             >
               Consultations
             </button>
 
             <button
               onClick={() => scrollToSection('areas-i-help-with')}
-              className="hover:text-[#332B27] transition-colors cursor-pointer py-1"
+              className={linkClass}
             >
               Areas I Help With
             </button>
 
             <button
               onClick={() => scrollToSection('the-curly-shrink')}
-              className="hover:text-[#332B27] transition-colors cursor-pointer py-1"
+              className={linkClass}
             >
               The Curly Shrink
             </button>
 
             <button
               onClick={() => scrollToSection('resources')}
-              className="hover:text-[#332B27] transition-colors cursor-pointer py-1"
+              className={linkClass}
             >
               Resources
             </button>
@@ -99,7 +105,7 @@ export const PatientNav: React.FC = () => {
             {/* Primary CTA button */}
             <button
               onClick={() => openBooking()}
-              className="ml-2 px-5 py-2.5 rounded-full bg-[#332B27] text-[#FAF7F0] text-xs font-semibold uppercase tracking-wider hover:bg-[#27201D] hover:translate-y-[-1px] transition-all duration-200 shadow-2xs hover:shadow-xs cursor-pointer"
+              className={`ml-2 px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors shadow-2xs cursor-pointer ${bookingColor}`}
             >
               BOOK A CONSULTATION
             </button>
@@ -107,7 +113,7 @@ export const PatientNav: React.FC = () => {
             {/* Discreet Portal Key */}
             <button
               onClick={() => setActiveView('admin-login')}
-              className="text-[#332B27]/30 hover:text-[#332B27] transition-colors p-1"
+              className={`opacity-70 hover:opacity-100 transition-opacity p-1 ${navigationText}`}
               title="Dr. Niva Portal Access"
             >
               <Lock className="w-3.5 h-3.5" />
@@ -118,13 +124,13 @@ export const PatientNav: React.FC = () => {
           <div className="flex xl:hidden items-center gap-1 shrink-0">
             <button
               onClick={() => openBooking()}
-              className="px-3.5 py-1.5 rounded-full bg-[#332B27] text-white text-[11px] font-semibold uppercase tracking-wider"
+              className={`px-3.5 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-wider ${bookingColor}`}
             >
               Book
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 text-[#332B27] rounded-lg hover:bg-neutral-100/60 cursor-pointer"
+              className={`p-2.5 rounded-lg hover:bg-[#B89552]/20 cursor-pointer ${navigationText}`}
               aria-label="Toggle Navigation Menu"
               aria-expanded={mobileMenuOpen}
               aria-controls="patient-mobile-menu"
