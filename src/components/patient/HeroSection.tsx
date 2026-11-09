@@ -11,7 +11,8 @@ import {
   useReducedMotion 
 } from 'framer-motion';
 import { editorialEase } from '../../utils/motionVariants';
-import drNivaPortrait from '../../assets/images/hero_dr_niva_1790926646890.jpg';
+import drNivaPortrait from '../../assets/images/dr-niva-hero.webp';
+import drNivaPortraitSmall from '../../assets/images/dr-niva-hero-small.webp';
 
 export const HeroSection: React.FC = () => {
   const { openBooking } = useApp();
@@ -266,9 +267,11 @@ export const HeroSection: React.FC = () => {
               >
                 <img
                   src={drNivaPortrait}
+                  srcSet={`${drNivaPortraitSmall} 480w, ${drNivaPortrait} 960w`}
+                  sizes="(min-width: 768px) 448px, (min-width: 640px) 384px, 240px"
                   alt={`Portrait of ${DOCTOR_INFO.name}`}
                   referrerPolicy="no-referrer"
-                  className="w-full h-auto aspect-[3/4] object-cover object-top filter contrast-[1.02] brightness-[1.01]"
+                  className="w-full h-auto aspect-[3/4] object-cover object-bottom"
                 />
               </div>
 
