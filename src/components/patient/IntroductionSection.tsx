@@ -8,11 +8,6 @@ import doctorPortraitSmall from '../../assets/images/dr-niva-about-small.webp';
 export const IntroductionSection: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
 
-  const scrollToAbout = () => {
-    const el = document.getElementById('about');
-    el?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <section id="introduction" className="py-16 md:py-24 bg-[#FAF7F0] texture-paper relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 relative z-10">
@@ -108,17 +103,6 @@ export const IntroductionSection: React.FC = () => {
               <p>
                 <strong className="font-semibold text-[#332B27]">You don't have to have everything figured out before you begin. You just have to start</strong>
               </p>
-            </div>
-
-            {/* Text link: About Dr. Niva → */}
-            <div className="pt-1">
-              <button
-                onClick={scrollToAbout}
-                className="editorial-link text-sm sm:text-base font-semibold text-[#332B27] hover:text-[#B89552] cursor-pointer group"
-              >
-                <span>About Dr. Niva</span>
-                <span className="transition-transform group-hover:translate-x-1.5">→</span>
-              </button>
             </div>
 
           </motion.div>
