@@ -704,23 +704,21 @@
   padding-top: 1.25rem;
 }
 .portrait-hero-heading {
+  border-left: 1px solid rgb(241 227 166 / 55%);
+  padding-left: clamp(1rem, 2vw, 1.75rem);
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  line-height: 1.12;
   letter-spacing: -.02em;
   text-wrap: balance;
 }
 .portrait-hero-lead {
   display: block;
-  max-width: 36ch;
-  margin-bottom: 1.15rem;
-  font-size: clamp(1.25rem, 1.8vw, 1.65rem);
-  line-height: 1.4;
-  letter-spacing: 0;
-  color: rgb(250 247 240 / 88%);
+  margin-bottom: .65em;
+  color: var(--color-ivory);
 }
 .portrait-hero-emphasis {
   display: block;
-  max-width: 22ch;
-  font-size: clamp(2.6rem, 4.6vw, 4.3rem);
-  line-height: 1.06;
+  font-style: italic;
   color: var(--color-butter);
 }
 @media (max-width: 767px) {
@@ -746,11 +744,7 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 2rem;
   }
-  .portrait-hero-lead {
-    margin-bottom: .9rem;
-    font-size: clamp(1.15rem, 4.8vw, 1.4rem);
-  }
-  .portrait-hero-emphasis {
-    font-size: clamp(2rem, 9vw, 3.25rem);
+  .portrait-hero-heading {
+    font-size: clamp(1.65rem, 7.2vw, 2.75rem);
   }
 }
