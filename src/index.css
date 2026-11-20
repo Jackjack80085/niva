@@ -691,18 +691,12 @@
   padding-block: 9rem clamp(2.75rem, 6vh, 4.5rem);
 }
 .portrait-hero-copy {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(16rem, 21rem);
-  align-items: end;
-  gap: 2rem;
+  max-width: 44rem;
 }
 .portrait-hero-heading {
   font-size: clamp(2rem, 3.5vw, 3.6rem);
   line-height: 1.05;
   text-wrap: balance;
-}
-.portrait-hero-actions {
-  padding-bottom: .3rem;
 }
 @media (max-width: 767px) {
   .portrait-hero {
@@ -722,10 +716,6 @@
   }
   .portrait-hero-inner {
     padding-block: clamp(17rem, 72vw, 22rem) 1.35rem;
-  }
-  .portrait-hero-copy {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.1rem;
   }
   .portrait-hero-heading {
     font-size: clamp(1.8rem, 7.7vw, 3.25rem);

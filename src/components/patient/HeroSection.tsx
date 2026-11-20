@@ -1,12 +1,8 @@
-import { ArrowDown, ArrowRight } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
 import { DOCTOR_INFO } from '../../data/initialData';
 import drNivaPortrait from '../../assets/images/dr-niva-hero.webp';
 import drNivaPortraitSmall from '../../assets/images/dr-niva-hero-small.webp';
 
 export const HeroSection = () => {
-  const { openBooking } = useApp();
-
   return (
     <section aria-labelledby="hero-heading" className="portrait-hero">
       <div className="portrait-hero-image">
@@ -29,31 +25,6 @@ export const HeroSection = () => {
             <span className="block text-[#F1E3A6]">I want to understand what brought you here.</span>
           </h1>
 
-          <div className="portrait-hero-actions">
-            <p className="mb-2 text-xs font-semibold tracking-wide text-[#F1E3A6]">
-              Psychiatrist · Sexologist · Therapist
-            </p>
-            <p className="text-sm leading-relaxed text-[#FAF7F0]/90 sm:text-base">
-              A compassionate, evidence-based space for your mental health, relationships and sexual wellbeing.
-            </p>
-            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1">
-              <button
-                type="button"
-                onClick={() => openBooking()}
-                className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-[#F1E3A6] px-5 py-3 text-sm font-bold text-[#332B27] transition-colors hover:bg-[#FAF7F0]"
-              >
-                Book a consultation
-                <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
-              </button>
-              <a
-                href="#consultations"
-                className="inline-flex min-h-11 items-center gap-1.5 text-xs font-semibold underline decoration-[#F1E3A6]/60 underline-offset-4 hover:text-[#F1E3A6]"
-              >
-                Explore services
-                <ArrowDown aria-hidden="true" className="size-3" />
-              </a>
-            </div>
-          </div>
         </div>
       </div>
     </section>
