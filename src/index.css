@@ -693,6 +693,16 @@
 .portrait-hero-copy {
   max-width: 42rem;
 }
+.portrait-hero-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 17rem);
+  align-items: end;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+.portrait-hero-note {
+  border-top: 1px solid rgb(241 227 166 / 40%);
+  padding-top: 1.25rem;
+}
 .portrait-hero-heading {
   letter-spacing: -.02em;
   text-wrap: balance;
@@ -731,6 +741,10 @@
   }
   .portrait-hero-inner {
     padding-block: clamp(18rem, 76vw, 24rem) 2.5rem;
+  }
+  .portrait-hero-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
   }
   .portrait-hero-lead {
     margin-bottom: .9rem;
