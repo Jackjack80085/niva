@@ -20,7 +20,7 @@ export const HeroSection = () => {
 
       <div className="portrait-hero-inner mx-auto w-full max-w-6xl px-5 sm:px-8">
         <div className="portrait-hero-content">
-          <div className="portrait-hero-copy texture-cocoa-grain">
+          <div className="portrait-hero-copy">
             <h1 id="hero-heading" className="portrait-hero-heading font-editorial font-normal">
               <span className="portrait-hero-lead">I don't just want to understand what you're going through.</span>{' '}
               <span className="portrait-hero-emphasis">I want to understand what brought you here.</span>

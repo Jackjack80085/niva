@@ -691,18 +691,17 @@
   padding-block: 10rem clamp(3rem, 7vh, 5rem);
 }
 .portrait-hero-copy {
+  position: relative;
+  isolation: isolate;
   max-width: 42rem;
-  padding: clamp(1.25rem, 2.5vw, 2rem);
-  border: 1px solid rgb(241 227 166 / 13%);
-  border-radius: 1.25rem;
-  background:
-    radial-gradient(ellipse at top left, rgb(241 227 166 / 6%), transparent 70%),
-    linear-gradient(135deg, rgb(51 43 39 / 78%), rgb(51 43 39 / 45%));
-  backdrop-filter: blur(6px);
-  box-shadow: 0 12px 40px rgb(29 24 21 / 12%);
 }
 .portrait-hero-copy::before {
-  border-radius: inherit;
+  content: "";
+  position: absolute;
+  inset: -3rem -4rem;
+  z-index: -1;
+  background: radial-gradient(ellipse, rgb(39 32 28 / 46%), transparent 72%);
+  pointer-events: none;
 }
 .portrait-hero-content {
   display: grid;
@@ -715,12 +714,11 @@
   padding-top: 1.25rem;
 }
 .portrait-hero-heading {
-  position: relative;
-  z-index: 2;
   font-size: clamp(1.8rem, 2.9vw, 2.65rem);
   line-height: 1.2;
   letter-spacing: -.01em;
   text-wrap: balance;
+  text-shadow: 0 2px 18px rgb(29 24 21 / 25%);
 }
 .portrait-hero-lead {
   display: block;
