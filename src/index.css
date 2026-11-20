@@ -756,30 +756,11 @@
   }
 }
 
-/* Continuous colour transitions between the homepage sections. */
+/* A shared backdrop keeps the content sections visually continuous. */
 .patient-homepage main > section,
 .patient-homepage main > footer {
   border-top: 0;
 }
-.patient-homepage #introduction {
-  padding-top: 10rem;
-  background: linear-gradient(var(--color-cocoa), var(--color-ivory) 8rem);
-}
-.patient-homepage .public-events-section {
-  background: linear-gradient(var(--color-ivory), #f1ecdf 5rem, #f1ecdf calc(100% - 5rem), var(--color-ivory));
-}
-.patient-homepage #consultations {
-  background: linear-gradient(var(--color-ivory), var(--color-cocoa) 5rem, var(--color-cocoa) calc(100% - 6rem), var(--color-butter));
-}
-.patient-homepage .curly-video-section {
-  background: linear-gradient(var(--color-butter), var(--color-butter) calc(100% - 5rem), #f5efeb);
-}
-.patient-homepage .home-credibility {
-  background: linear-gradient(#f5efeb, #f5efeb calc(100% - 5rem), var(--color-ivory));
-}
-.patient-homepage .home-final-cta {
-  background: linear-gradient(var(--color-ivory), var(--color-ivory) calc(100% - 5rem), var(--color-cocoa));
-}
-@media (prefers-reduced-motion: reduce) {
-  .patient-homepage { scroll-behavior: auto; }
+.patient-homepage main > section:not(.portrait-hero) {
+  background: var(--color-ivory);
 }

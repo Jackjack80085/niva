@@ -73,7 +73,7 @@ export const ConsultationsSection: React.FC = () => {
   return (
     <section 
       id="consultations" 
-      className="bg-[#332B27] text-[#FAF7F0] texture-cocoa-grain relative overflow-hidden pt-28 pb-32 md:pt-36 md:pb-44"
+      className="bg-[#FAF7F0] text-[#332B27] texture-paper relative overflow-hidden pt-28 pb-32 md:pt-36 md:pb-44"
     >
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         
@@ -85,14 +85,14 @@ export const ConsultationsSection: React.FC = () => {
           viewport={standardViewport}
           transition={{ duration: shouldReduceMotion ? 0.01 : 0.8, ease: editorialEase }}
         >
-          <p className="text-xs font-bold tracking-widest uppercase text-[#F1E3A6] font-sans-clean mb-3">
+          <p className="text-xs font-bold tracking-widest uppercase text-[#927743] font-sans-clean mb-3">
             CONSULTATIONS & THERAPY
           </p>
-          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl text-[#FAF7F0] font-normal leading-[1.08] tracking-tight">
+          <h2 className="font-editorial text-4xl sm:text-5xl md:text-6xl text-[#332B27] font-normal leading-[1.08] tracking-tight">
             Choose the kind of<br />
             support you need.
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-[#FAF7F0]/70 font-sans-clean leading-relaxed font-light">
+          <p className="mt-4 text-sm sm:text-base text-[#332B27]/70 font-sans-clean leading-relaxed font-light">
             Begin with a preliminary consultation to assess your needs, or reserve ongoing specialized psychotherapy.
           </p>
         </motion.div>
@@ -160,16 +160,16 @@ export const ConsultationsSection: React.FC = () => {
 
         {/* 2. THERAPY OPTIONS UNDERNEATH AS SOPHISTICATED ROWS (NOT 6 BOXED CARDS) */}
         <div className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#FAF7F0]/15">
-            <h3 className="font-sans-clean text-xs font-bold tracking-widest uppercase text-[#F1E3A6]">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#332B27]/15">
+            <h3 className="font-sans-clean text-xs font-bold tracking-widest uppercase text-[#927743]">
               THERAPY MODALITIES
             </h3>
-            <span className="text-xs text-[#FAF7F0]/40 font-mono-tabular">
+            <span className="text-xs text-[#332B27]/40 font-mono-tabular">
               Individual & Relational Care
             </span>
           </div>
 
-          <div className="divide-y divide-[#FAF7F0]/15 border-b border-[#FAF7F0]/15">
+          <div className="divide-y divide-[#332B27]/15 border-b border-[#332B27]/15">
             {THERAPY_OFFERINGS.map((item, idx) => {
               const isOpen = activeRow === idx;
 
@@ -182,23 +182,23 @@ export const ConsultationsSection: React.FC = () => {
                   {/* Row Header */}
                   <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 sm:gap-4">
                     <div className="flex items-baseline gap-4 sm:gap-6 flex-1 min-w-0">
-                      <span className="font-mono-tabular text-xs sm:text-sm font-semibold text-[#F1E3A6]/60">
+                      <span className="font-mono-tabular text-xs sm:text-sm font-semibold text-[#927743]/60">
                         {item.num}
                       </span>
-                      <h4 className="font-editorial text-xl sm:text-2xl lg:text-3xl font-medium tracking-wide text-[#FAF7F0] group-hover:text-[#F1E3A6] transition-colors">
+                      <h4 className="font-editorial text-xl sm:text-2xl lg:text-3xl font-medium tracking-wide text-[#332B27] group-hover:text-[#927743] transition-colors">
                         {item.title}
                       </h4>
                     </div>
 
                     <div className="flex items-center justify-between sm:justify-end gap-4 pl-8 sm:pl-0 shrink-0 font-mono-tabular">
-                      <span className="text-xs text-[#FAF7F0]/50">
+                      <span className="text-xs text-[#332B27]/50">
                         {item.duration}
                       </span>
-                      <span className="text-xl sm:text-2xl font-semibold text-[#FAF7F0]">
+                      <span className="text-xl sm:text-2xl font-semibold text-[#332B27]">
                         {item.fee}
                       </span>
-                      <button type="button" aria-label={`Details for ${item.title}`} aria-expanded={isOpen} onClick={e=>{e.stopPropagation();setActiveRow(isOpen?null:idx);}} className={`w-11 h-11 sm:w-8 sm:h-8 shrink-0 rounded-full border border-[#FAF7F0]/20 flex items-center justify-center transition-all duration-300 ${
-                        isOpen ? 'rotate-45 border-[#F1E3A6] text-[#F1E3A6]' : 'text-[#FAF7F0]/50'
+                      <button type="button" aria-label={`Details for ${item.title}`} aria-expanded={isOpen} onClick={e=>{e.stopPropagation();setActiveRow(isOpen?null:idx);}} className={`w-11 h-11 sm:w-8 sm:h-8 shrink-0 rounded-full border border-[#332B27]/20 flex items-center justify-center transition-all duration-300 ${
+                        isOpen ? 'rotate-45 border-[#927743] text-[#927743]' : 'text-[#332B27]/50'
                       }`}>
                         <ArrowUpRight className="w-4 h-4" />
                       </button>
@@ -220,7 +220,7 @@ export const ConsultationsSection: React.FC = () => {
                         className="overflow-hidden"
                       >
                         <div className="pt-4 pl-8 sm:pl-12 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <p className="text-xs sm:text-sm text-[#FAF7F0]/75 font-sans-clean leading-relaxed font-light max-w-xl">
+                          <p className="text-xs sm:text-sm text-[#332B27]/75 font-sans-clean leading-relaxed font-light max-w-xl">
                             {item.description}
                           </p>
 
