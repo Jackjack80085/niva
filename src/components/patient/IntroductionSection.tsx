@@ -33,10 +33,10 @@ export const IntroductionSection: React.FC = () => {
               style={{
                 borderRadius: '2px 42px 2px 32px',
               }}
-              initial={{ clipPath: shouldReduceMotion ? 'inset(0% 0% 0% 0%)' : 'inset(100% 0% 0% 0%)' }}
-              whileInView={{ clipPath: 'inset(0% 0% 0% 0%)' }}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={standardViewport}
-              transition={{ duration: shouldReduceMotion ? 0.01 : 1.1, ease: editorialEase }}
+              transition={{ duration: shouldReduceMotion ? 0 : .65, ease: editorialEase }}
             >
               <motion.img
                 src={doctorPortrait}
@@ -45,7 +45,7 @@ export const IntroductionSection: React.FC = () => {
                 alt="Dr. Niva Jacob in a white coat"
                 loading="lazy"
                 className="w-full h-auto aspect-[4/5] object-cover object-[center_85%]"
-                initial={{ scale: shouldReduceMotion ? 1 : 1.05 }}
+                initial={{ scale: shouldReduceMotion ? 1 : 1.025 }}
                 whileInView={{ scale: 1 }}
                 viewport={standardViewport}
                 transition={{ duration: shouldReduceMotion ? 0.01 : 1.3, ease: editorialEase }}
@@ -62,7 +62,7 @@ export const IntroductionSection: React.FC = () => {
           {/* ================= RIGHT: EDITORIAL HEADLINE & STORY ================= */}
           <motion.div
             className="lg:col-span-7 min-w-0 flex flex-col justify-center space-y-4"
-            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={standardViewport}
             transition={{ duration: shouldReduceMotion ? 0.01 : 0.85, delay: 0.25, ease: editorialEase }}

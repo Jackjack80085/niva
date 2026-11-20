@@ -6,13 +6,13 @@ export const editorialEase = [0.22, 1, 0.36, 1] as const;
 export const fadeInUp: Variants = {
   hidden: { 
     opacity: 0, 
-    y: 24 
+    y: 12
   },
   visible: { 
     opacity: 1, 
     y: 0,
     transition: { 
-      duration: 0.8, 
+      duration: 0.65,
       ease: editorialEase 
     } 
   },

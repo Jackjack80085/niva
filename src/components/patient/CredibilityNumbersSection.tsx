@@ -49,7 +49,7 @@ export const CredibilityNumbersSection: React.FC = () => {
   return (
     <section 
       ref={ref}
-      className="py-28 md:py-40 bg-[#F5EFEB] texture-paper border-t border-[#332B27]/10 relative overflow-hidden"
+      className="home-credibility py-28 md:py-40 bg-[#F5EFEB] texture-paper relative overflow-hidden"
     >
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
@@ -58,7 +58,7 @@ export const CredibilityNumbersSection: React.FC = () => {
           
           {/* Metric 1: 6,300+ clients */}
           <motion.div
-            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={standardViewport}
             transition={{ duration: shouldReduceMotion ? 0.01 : 0.85, ease: editorialEase }}

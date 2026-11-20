@@ -39,7 +39,7 @@ export const FinalBookingCta: React.FC = () => {
   return (
     <section 
       ref={containerRef}
-      className="py-28 md:py-44 bg-[#FAF7F0] texture-paper relative overflow-hidden flex items-center justify-center border-t border-[#332B27]/10"
+      className="home-final-cta py-28 md:py-44 bg-[#FAF7F0] texture-paper relative overflow-hidden flex items-center justify-center"
     >
       {/* Large Butter-Yellow Organic Shape entering from the right edge */}
       <motion.div
@@ -54,7 +54,7 @@ export const FinalBookingCta: React.FC = () => {
         
         {/* Emotional Finale Heading */}
         <motion.div
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={standardViewport}
           transition={{ duration: shouldReduceMotion ? 0.01 : 0.85, ease: editorialEase }}

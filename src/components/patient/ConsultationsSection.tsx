@@ -75,20 +75,12 @@ export const ConsultationsSection: React.FC = () => {
       id="consultations" 
       className="bg-[#332B27] text-[#FAF7F0] texture-cocoa-grain relative overflow-hidden pt-28 pb-32 md:pt-36 md:pb-44"
     >
-      {/* Visual Organic Overlap Transition from previous Ivory section */}
-      <div 
-        className="absolute top-0 inset-x-0 h-16 sm:h-20 bg-[#FAF7F0] pointer-events-none -z-0"
-        style={{
-          clipPath: 'ellipse(65% 100% at 50% 0%)',
-        }}
-      />
-
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         
         {/* Section Header */}
         <motion.div 
           className="text-center max-w-2xl mx-auto mb-16 md:mb-24"
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={standardViewport}
           transition={{ duration: shouldReduceMotion ? 0.01 : 0.8, ease: editorialEase }}
@@ -107,7 +99,7 @@ export const ConsultationsSection: React.FC = () => {
 
         {/* 1. LARGE CONSULTATION FEATURE FIRST */}
         <motion.div
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
+          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={standardViewport}
           transition={{ duration: shouldReduceMotion ? 0.01 : 0.85, ease: editorialEase }}
