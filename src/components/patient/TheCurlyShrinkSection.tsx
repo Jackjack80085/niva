@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import { fadeInUp, standardViewport } from '../../utils/motionVariants';
 import { Play, Instagram, Youtube, ArrowUpRight } from 'lucide-react';
 import { HandDrawnCurl } from '../common/OrganicMotifs';
 
@@ -12,21 +10,20 @@ const VIDEOS = [
 
 export const TheCurlyShrinkSection = () => {
   const [playing, setPlaying] = useState<string | null>(null);
-  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section id="the-curly-shrink" className="curly-video-section">
       <div className="curly-video-container">
-        <motion.header className="curly-video-heading" variants={fadeInUp} initial={shouldReduceMotion ? false : 'hidden'} whileInView="visible" viewport={standardViewport}>
+        <header className="curly-video-heading">
           <p className="curly-video-eyebrow">THE OTHER SIDE OF MY WORK</p>
           <h2>Meet The <em>Curly</em> Shrink.</h2>
           <p>Mental health, sexual health and relationship conversations — made simpler, more relatable and easier to talk about.</p>
           <HandDrawnCurl width={90} strokeWidth={2.4} color="#332B27" delay={0.4} />
-        </motion.header>
+        </header>
 
         <div className="curly-video-grid">
           {VIDEOS.map(video => (
-            <motion.article className="curly-video-card" key={video.id} variants={fadeInUp} initial={shouldReduceMotion ? false : 'hidden'} whileInView="visible" viewport={standardViewport}>
+            <article className="curly-video-card" key={video.id}>
               <div className="curly-video-preview">
                 {playing === video.id ? (
                   <iframe
@@ -52,17 +49,17 @@ export const TheCurlyShrinkSection = () => {
                 <p className="curly-video-detail">{video.detail}</p>
                 <a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${video.title} on YouTube`}>Watch on YouTube <ArrowUpRight size={14} aria-hidden="true" /></a>
               </div>
-            </motion.article>
+            </article>
           ))}
         </div>
 
-        <motion.footer className="curly-video-footer" variants={fadeInUp} initial={shouldReduceMotion ? false : 'hidden'} whileInView="visible" viewport={standardViewport}>
+        <footer className="curly-video-footer">
           <div><span>@thecurlyshrink</span><p>More conversations, on your favourite platform.</p></div>
           <div className="curly-social-links">
             <a href="https://www.instagram.com/thecurlyshrink?utm_source=ig_web_button_share_sheet&amp;mdxt=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer"><Instagram size={17} aria-hidden="true" /> Instagram <ArrowUpRight size={14} aria-hidden="true" /></a>
             <a href="https://youtube.com/@thecurlyshrink?si=FaFOOMiMarQnIrOu" target="_blank" rel="noopener noreferrer"><Youtube size={18} aria-hidden="true" /> YouTube <ArrowUpRight size={14} aria-hidden="true" /></a>
           </div>
-        </motion.footer>
+        </footer>
       </div>
     </section>
   );

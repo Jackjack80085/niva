@@ -1,6 +1,4 @@
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import { fadeInUp, standardViewport } from '../../utils/motionVariants';
 import { useApp } from '../../context/AppContext';
 import { DOCTOR_INFO } from '../../data/initialData';
 import { Lock, ArrowUpRight } from 'lucide-react';
@@ -8,7 +6,6 @@ import { HandDrawnCurl } from '../common/OrganicMotifs';
 
 export const PatientFooter: React.FC = () => {
   const { setActiveView } = useApp();
-  const shouldReduceMotion = useReducedMotion();
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -19,7 +16,7 @@ export const PatientFooter: React.FC = () => {
 
   return (
     <footer className="bg-[#332B27] text-[#FAF7F0] texture-cocoa-grain py-20 sm:py-28 relative overflow-hidden border-t border-[#FAF7F0]/10 font-sans-clean">
-      <motion.div className="max-w-6xl mx-auto px-6 space-y-16 relative z-10" variants={fadeInUp} initial={shouldReduceMotion ? false : 'hidden'} whileInView="visible" viewport={standardViewport}>
+      <div className="max-w-6xl mx-auto px-6 space-y-16 relative z-10">
         
         {/* Main Footer Header */}
         <div className="space-y-4">
@@ -144,7 +141,7 @@ export const PatientFooter: React.FC = () => {
           </button>
         </div>
 
-      </motion.div>
+      </div>
     </footer>
   );
 };
