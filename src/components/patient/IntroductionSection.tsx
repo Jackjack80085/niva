@@ -85,16 +85,28 @@ export const IntroductionSection: React.FC = () => {
 
             {/* Large Cormorant Heading */}
             <h2 className="font-editorial text-4xl sm:text-5xl lg:text-[3.8rem] text-[#332B27] font-normal leading-[1.08] tracking-tight">
-              A space where you can be heard without judgment.
+              A space where you can be heard, understood and cared for without judgment.
             </h2>
 
             {/* Body Copy */}
             <div className="space-y-4 text-[#332B27]/80 font-sans-clean leading-relaxed font-light text-base sm:text-lg">
               <p>
-                Too often, mental healthcare forces a rigid divide: you either receive a ten-minute psychiatric prescription, or therapy that completely ignores the neurobiological and somatic reality of your body.
+                I believe mental health is about much more than symptoms, diagnoses or prescriptions. It is about understanding the person behind them, their experiences, relationships, emotional world and the patterns that shape how they navigate life.
               </p>
               <p>
-                I built this practice so that your nervous system, your intimate relationships, and your mental health are finally addressed together. Whether navigating complex panic, lifelong attachment patterns, or private psychosexual concerns, sessions are unhurried, evidence-based, and rooted in unconditional human dignity.
+                As a Psychiatrist, Sexologist and Therapist, I offer an integrated approach to mental healthcare, combining comprehensive psychiatric assessment, evidence-based treatment, medication when clinically indicated, and psychotherapy. I also explore the interconnected aspects of relationships, intimacy and sexual health as part of an individual's overall well-being.
+              </p>
+              <p>
+                Whether you are navigating anxiety, depression, childhood experiences, attachment difficulties, relationship concerns or challenges around intimacy and sexuality, my approach is rooted in empathy, curiosity and scientific understanding.
+              </p>
+              <p>
+                I believe good mental healthcare involves both understanding and intervention, creating space to feel heard and validated, while identifying patterns, exploring underlying concerns and working towards meaningful change.
+              </p>
+              <p>
+                Every person has a different story, and care should reflect that. My aim is to offer a space where you can be yourself, without judgment, assumptions or one-size-fits-all solutions.
+              </p>
+              <p>
+                <strong className="font-semibold text-[#332B27]">You don't have to have everything figured out before you begin. You just have to start</strong>
               </p>
             </div>
 
