@@ -14,7 +14,7 @@ export const IntroductionSection: React.FC = () => {
   };
 
   return (
-    <section id="introduction" className="py-24 md:py-36 bg-[#FAF7F0] texture-paper relative overflow-hidden">
+    <section id="introduction" className="py-16 md:py-24 bg-[#FAF7F0] texture-paper relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
         {/* Asymmetric Editorial Composition (45% Photo Left, 55% Content Right) */}
@@ -66,7 +66,7 @@ export const IntroductionSection: React.FC = () => {
 
           {/* ================= RIGHT: EDITORIAL HEADLINE & STORY ================= */}
           <motion.div
-            className="lg:col-span-7 flex flex-col justify-center space-y-6"
+            className="lg:col-span-7 min-w-0 flex flex-col justify-center space-y-4"
             initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={standardViewport}
@@ -84,12 +84,12 @@ export const IntroductionSection: React.FC = () => {
             </div>
 
             {/* Large Cormorant Heading */}
-            <h2 className="font-editorial text-4xl sm:text-5xl lg:text-[3.8rem] text-[#332B27] font-normal leading-[1.08] tracking-tight">
+            <h2 className="font-editorial text-3xl sm:text-4xl text-[#332B27] font-normal leading-[1.12] tracking-tight">
               A space where you can be heard, understood and cared for without judgment.
             </h2>
 
             {/* Body Copy */}
-            <div className="space-y-4 text-[#332B27]/80 font-sans-clean leading-relaxed font-light text-base sm:text-lg">
+            <div className="space-y-3 text-[#332B27]/80 font-sans-clean leading-[1.7] font-light text-sm sm:text-[15px]">
               <p>
                 I believe mental health is about much more than symptoms, diagnoses or prescriptions. It is about understanding the person behind them, their experiences, relationships, emotional world and the patterns that shape how they navigate life.
               </p>
@@ -111,7 +111,7 @@ export const IntroductionSection: React.FC = () => {
             </div>
 
             {/* Text link: About Dr. Niva → */}
-            <div className="pt-4">
+            <div className="pt-1">
               <button
                 onClick={scrollToAbout}
                 className="editorial-link text-sm sm:text-base font-semibold text-[#332B27] hover:text-[#B89552] cursor-pointer group"
